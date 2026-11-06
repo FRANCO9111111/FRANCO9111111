@@ -1,0 +1,54 @@
+const assert=require('assert');process.env.DB_FILE=':memory:';process.env.ADMIN_TOKEN='adm';process.env.PORT=0;
+const {server}=require('../server/server.js');
+(async()=>{await new Promise(r=>server.listen(0,r));const base='http://127.0.0.1:'+server.address().port;
+const call=async(m,p,b,tok,extra)=>{const r=await fetch(base+p,{method:m,headers:Object.assign({'Content-Type':'application/json'},tok?{Authorization:'Bearer '+tok}:{},extra||{}),body:b?JSON.stringify(b):undefined});return Object.assign({status:r.status},await r.json())};
+let ok=0;const t=(n,c)=>{assert(c,n);ok++;console.log('  ok -',n)};
+let r=await call('POST','/api/register',{email:'bad',password:'12345678'});t('rejects bad email',r.status===400);
+r=await call('POST','/api/register',{email:'a@x.com',password:'short'});t('rejects short password',r.status===400);
+r=await call('POST','/api/register',{email:'A@x.com',password:'password1'});t('registers',r.ok&&r.token&&!r.user.setupDone);const tokA=r.token;
+r=await call('POST','/api/register',{email:'a@x.com',password:'password1'});t('duplicate email rejected',r.status===409);
+r=await call('POST','/api/login',{email:'a@x.com',password:'wrongpass'});t('wrong password rejected',r.status===401);
+r=await call('POST','/api/login',{email:'a@x.com',password:'password1'});t('login ok',r.ok);const tokA2=r.token;
+r=await call('GET','/api/username?u=ab');t('short username invalid',r.valid===false);
+r=await call('GET','/api/username?u=Tunde');t('reserved username unavailable',r.available===false);
+r=await call('GET','/api/username?u=Bayo_01');t('free username available',r.available===true);
+r=await call('PUT','/api/progress',{data:{x:1,z:2,money:5}},tokA);t('progress blocked before setup (resume setup later)',r.status===409);
+r=await call('POST','/api/profile',{username:'Bayo_01',gender:'female'},tokA);t('profile saved',r.ok&&r.user.characterId==='chioma'&&r.progress.money===50000);
+r=await call('GET','/api/username?u=bayo_01');t('username now taken (case-insensitive)',r.available===false);
+r=await call('POST','/api/register',{email:'b@x.com',password:'password2'});const tokB=r.token;
+r=await call('POST','/api/profile',{username:'BAYO_01',gender:'male'},tokB);t('duplicate username prevented',r.status===409);
+r=await call('GET','/api/me',tokB&&null,tokB);t('incomplete registration resumes setup after re-login',r.ok&&r.user.setupDone===false&&r.progress===null);
+r=await call('POST','/api/profile',{username:'Chidi',gender:'male'},tokB);t('second user setup',r.ok);
+// persistence of position/inventory
+r=await call('PUT','/api/progress',{data:{x:12.5,z:-40,rot:1,zone:'out',money:42000,hunger:80,energy:70,health:90,inventory:{water:2},fuel:{'1':12.5},job:'FISHING'}},tokA2);t('progress saved',r.ok);
+r=await call('POST','/api/login',{email:'a@x.com',password:'password1'});const me=await call('GET','/api/me',null,r.token);t('login restores last position, money, inventory, fuel',me.progress.x===12.5&&me.progress.z===-40&&me.progress.money===42000&&me.progress.inventory.water===2&&me.progress.fuel['1']===12.5&&me.user.username==='Bayo_01');
+// shop (server validates prices)
+r=await call('POST','/api/shop/checkout',{items:[{id:'water',qty:2},{id:'bread',qty:1}]},tokA2);t('checkout charges server price & adds inventory',r.ok&&r.money===42000-(250*2+1300)&&r.inventory.water===4&&r.inventory.bread===1);
+r=await call('POST','/api/shop/checkout',{items:[{id:'rice5',qty:50}]},tokA2);t('checkout refuses when too poor',r.status===402);
+r=await call('POST','/api/shop/checkout',{items:[{id:'fake',qty:1}]},tokA2);t('checkout refuses unknown product',r.status===402);
+r=await call('POST','/api/shop/checkout',{items:[{id:'water',qty:-5,price:1}]},tokA2);t('checkout ignores client price / negative qty',r.status===402);
+r=await call('POST','/api/fishing/payout',{catches:['carp','catfish','nothing']},tokA2);t('fishing payout from real catches only',r.ok&&r.result.total===1800+2600&&r.result.caught===2);
+r=await call('POST','/api/fuel/buy',{litres:10},tokA2);t('fuel purchase deducts money',r.ok&&r.result.cost===9000);
+r=await call('POST','/api/inventory/use',{id:'water'},tokA2);t('inventory use',r.ok);
+// premium
+r=await call('GET','/api/config');t('config served from DB (no hardcoded client list)',r.ok&&r.config.premiumCharacters.length===4&&r.config.payments.status==='coming_soon');
+const before=(await call('GET','/api/me',null,tokA2)).progress.money;
+r=await call('POST','/api/premium/purchase',{id:'male_casual'},tokA2);const after=(await call('GET','/api/me',null,tokA2)).progress.money;t('purchase is Coming Soon, no unlock, no wallet deduction',r.ok===false&&r.status==='coming_soon'&&after===before);
+r=await call('POST','/api/premium/select',{id:'male_casual'},tokA2);t('locked premium cannot be selected',r.status===403);
+r=await call('POST','/api/admin/grant',{userId:1,characterId:'male_casual',paymentRef:'x'},tokA2);t('grant needs admin token',r.status===403);
+r=await call('POST','/api/admin/grant',{userId:1,characterId:'male_casual',paymentRef:'pay_123'},null,{'x-admin-token':'adm'});t('verified payment grant works',r.ok);
+r=await call('POST','/api/premium/select',{id:'male_casual'},tokA2);t('owned premium selectable',r.ok&&r.characterId==='male_casual');
+r=await call('PUT','/api/admin/config?key=fuel',{value:{pricePerLitre:1000}},null,{'x-admin-token':'adm'});r=await call('GET','/api/config');t('admin-controlled config',r.config.fuel.pricePerLitre===1000);
+// multiplayer
+const wsA=new WebSocket(base.replace('http','ws')+'/ws?token='+tokA2);const wsB=new WebSocket(base.replace('http','ws')+'/ws?token='+tokB);
+const inbox={A:[],B:[]};wsA.onmessage=e=>inbox.A.push(JSON.parse(e.data));wsB.onmessage=e=>inbox.B.push(JSON.parse(e.data));
+await new Promise(r=>{let n=0;wsA.onopen=wsB.onopen=()=>{if(++n===2)r()}});await new Promise(r=>setTimeout(r,200));
+t('ws hello + join broadcast',inbox.A.some(m=>m.t==='hello')&&inbox.A.some(m=>m.t==='join'&&m.name==='Chidi')&&inbox.B.find(m=>m.t==='hello').players[0].name==='Bayo_01');
+wsA.send(JSON.stringify({t:'st',x:5,z:6,y:0,r:1.5,a:'run',v:1}));await new Promise(r=>setTimeout(r,350));
+const snap=inbox.B.filter(m=>m.t==='snap').pop();t('position/anim sync to other players',snap&&snap.p.some(p=>p.s.x===5&&p.s.a==='run'));
+wsA.send(JSON.stringify({t:'claim',veh:'police1'}));await new Promise(r=>setTimeout(r,100));wsB.send(JSON.stringify({t:'claim',veh:'police1'}));await new Promise(r=>setTimeout(r,150));
+t('vehicle ownership: first claim wins, second refused',inbox.A.some(m=>m.t==='claimOk')&&inbox.B.some(m=>m.t==='claimNo'&&m.veh==='police1'));
+wsA.close();await new Promise(r=>setTimeout(r,200));t('claim released when owner leaves',inbox.B.some(m=>m.t==='claim'&&m.veh==='police1'&&m.by===null));wsB.close();
+const bad=new WebSocket(base.replace('http','ws')+'/ws?token=nope');let rejected=await new Promise(r=>{bad.onerror=()=>r(true);bad.onopen=()=>r(false)});t('ws rejects bad token',rejected);
+const idx=await fetch(base+'/server/server.js');t('server source not served',idx.status===404);
+console.log('\nALL',ok,'SERVER TESTS PASSED');server.close();process.exit(0)})().catch(e=>{console.error('FAIL',e.message);process.exit(1)});

@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="theme-color" content="#0A1747">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="application-name" content="Our Class Room">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Our Classroom"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Our Class Room: smarter attendance, better accountability.">
+<title>Our Class Room — Attendance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#2f9fd6;--brand-d:#1f78b0;--brand-xd:#155b88;--brand-tint:#eaf5fc;
+  --ink:#0b2236;--ink-2:#1d3a52;--mut:#5f7689;--ln:#dde8f0;--ln-2:#c9d9e5;
+  --bg:#f4f8fb;--card:#fff;--err:#c93c3c;--ok:#1f9d6b;
+  --r:11px;--r-lg:16px;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Manrope','Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:13.5px/1.5 var(--font);color:var(--ink);background:var(--bg);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:minmax(0,1fr);min-height:100vh;min-height:100dvh}
+.aside{display:none}
+.main{display:flex;flex-direction:column;padding:max(20px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom))}
+.main-in{width:100%;max-width:400px;margin:0 auto;flex:1;display:flex;flex-direction:column}
+
+@media(min-width:960px){
+  .shell{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
+  .aside{display:flex;flex-direction:column;justify-content:space-between;padding:44px 56px;color:#d7e7f3;position:relative;overflow:hidden;
+    background:linear-gradient(160deg,#0e2c45 0%,#0b2236 60%,#09192a 100%)}
+  .aside:before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 20% 30%,#000 10%,transparent 75%);mask-image:radial-gradient(ellipse at 20% 30%,#000 10%,transparent 75%)}
+  .aside>*{position:relative}
+  .main{justify-content:center;padding:44px 56px}
+  .main-in{flex:0 1 auto}
+  .m-brand{display:none!important}
+}
+
+/* ---------- brand ---------- */
+.brand{display:flex;align-items:center;gap:12px}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:none;box-shadow:0 1px 0 rgba(11,34,54,.04),0 0 0 1px var(--ln)}
+.brand .mark img{width:22px;height:22px;object-fit:contain;display:block}
+.brand b{font:800 16px/1 var(--display);letter-spacing:-.02em}
+.aside .brand .mark{box-shadow:none}
+.aside .brand b{color:#fff}
+.m-brand{padding:4px 0 20px}
+
+.aside h1{font:800 clamp(26px,2.7vw,34px)/1.12 var(--display);letter-spacing:-.035em;color:#fff;margin:0 0 16px;max-width:15ch}
+.aside .lede{margin:0;color:#9fb8cc;max-width:36ch;font-size:14px}
+.points{list-style:none;margin:0;padding:0;display:grid;gap:18px}
+.points li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start}
+.points .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(47,159,214,.14);color:#7cc6ec;box-shadow:inset 0 0 0 1px rgba(124,198,236,.22)}
+.points svg{width:17px;height:17px}
+.points b{display:block;color:#fff;font:700 13px/1.3 var(--display);margin-bottom:2px}
+.points span{color:#8ea9bd;font-size:12.5px;line-height:1.5}
+.aside small{color:#6f8aa0;font-size:12px}
+
+/* ---------- stepper ---------- */
+.stepper{display:flex;align-items:center;gap:8px;margin:0 0 16px;padding:0;list-style:none}
+.stepper li{display:flex;align-items:center;gap:7px;font:600 11px/1 var(--font);color:var(--mut);letter-spacing:.01em;white-space:nowrap}
+.stepper .n{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;font:700 10px/1 var(--font);background:#fff;color:var(--mut);box-shadow:inset 0 0 0 1.5px var(--ln-2);transition:.25s}
+.stepper .n svg{width:10px;height:10px;display:none}
+.stepper li+li:before{content:"";width:22px;height:1.5px;background:var(--ln-2);margin-right:0;flex:none}
+.stepper li.on{color:var(--ink)}
+.stepper li.on .n{background:var(--ink);color:#fff;box-shadow:none}
+.stepper li.done .n{background:var(--brand);color:#fff;box-shadow:none}
+.stepper li.done .n span{display:none}.stepper li.done .n svg{display:block}
+.stepper li.done+li:before,.stepper li.on:before{background:var(--brand)}
+@media(max-width:480px){.stepper li:not(.on) em{display:none}.stepper li+li:before{width:14px}}
+.stepper em{font-style:normal}
+
+/* ---------- card ---------- */
+.card{background:var(--card);border:1px solid var(--ln);border-radius:var(--r-lg);padding:20px;box-shadow:0 1px 2px rgba(11,34,54,.04),0 12px 32px -12px rgba(11,34,54,.12);animation:rise .35s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+@media(max-width:420px){.card{padding:18px 16px;border-radius:14px}}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;max-width:100%;font:600 11px/1.3 var(--font);color:var(--brand-d);background:var(--brand-tint);border-radius:7px;padding:5px 9px;margin-bottom:11px}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--brand);flex:none}
+.eyebrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+h2{font:800 18px/1.25 var(--display);letter-spacing:-.025em;margin:0 0 4px}
+.sub{margin:0 0 2px;color:var(--mut);font-size:12.5px}
+
+/* ---------- form ---------- */
+.field{margin-top:13px}
+label{display:block;font:600 12px/1.3 var(--font);color:var(--ink-2);margin:0 0 5px}
+input{width:100%;height:40px;padding:0 12px;border:1px solid var(--ln-2);border-radius:var(--r);background:#fff;font-size:13.5px;outline:none;transition:border-color .15s,box-shadow .15s}
+input::placeholder{color:#9db0be}
+input:hover{border-color:#aec3d2}
+input:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(47,159,214,.16)}
+.code-in{height:48px;font:700 19px/1 var(--mono);letter-spacing:.28em;text-align:center;text-transform:uppercase;padding-left:calc(12px + .28em)}
+.code-in::placeholder{letter-spacing:.2em;font-weight:500;color:#b6c5d0}
+.hint{margin:6px 0 0;font-size:11.5px;color:var(--mut)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:40px;margin-top:16px;border:0;border-radius:var(--r);font:700 13.5px/1 var(--display);letter-spacing:-.005em;color:#fff;background:var(--ink);cursor:pointer;transition:background .15s,transform .1s,box-shadow .15s;box-shadow:0 1px 0 rgba(255,255,255,.08) inset,0 6px 14px -6px rgba(11,34,54,.5)}
+.btn:hover{background:#13334f}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.55;cursor:default;pointer-events:none}
+.btn svg{width:14px;height:14px;transition:transform .15s}
+.btn:hover svg{transform:translateX(2px)}
+.btn.alt{background:#fff;color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--ln-2);height:36px;font:600 12px/1 var(--font);margin-top:8px}
+.btn.alt:hover{background:var(--bg)}
+.btn.alt svg{display:none}
+.btn.primary{background:var(--brand-d)}
+.btn.primary:hover{background:var(--brand-xd)}
+
+/* ---------- dropdown ---------- */
+.dd{position:relative}
+.dd-btn{width:100%;height:40px;text-align:left;padding:0 12px;border:1px solid var(--ln-2);border-radius:var(--r);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:border-color .15s,box-shadow .15s}
+.dd-btn:hover{border-color:#aec3d2}
+.dd-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9db0be}
+.dd-btn.has span{color:var(--ink)}
+.dd-btn:after{content:"";width:8px;height:8px;border-right:1.8px solid var(--mut);border-bottom:1.8px solid var(--mut);transform:translateY(-2px) rotate(45deg);flex:none;transition:transform .2s}
+.dd.open .dd-btn{border-color:var(--brand);box-shadow:0 0 0 4px rgba(47,159,214,.16)}
+.dd.open .dd-btn:after{transform:translateY(2px) rotate(225deg)}
+.dd-list{display:none;position:absolute;z-index:20;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--ln);border-radius:var(--r);box-shadow:0 18px 40px -10px rgba(11,34,54,.22);max-height:240px;overflow:auto;padding:5px}
+.dd.open .dd-list{display:block;animation:rise .15s ease}
+.dd-item{padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dd-item:hover,.dd-item.hl{background:var(--brand-tint)}
+.dd-item.sel{font-weight:600}
+.dd-item.sel:after{content:"";width:6px;height:11px;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand);transform:rotate(45deg) translate(-2px,-1px);flex:none}
+.dd-item.empty{color:var(--mut);cursor:default}.dd-item.empty:hover{background:none}
+
+/* ---------- verification ---------- */
+.cam{position:relative;border-radius:18px;overflow:hidden;background:#07131f;aspect-ratio:4/3;margin:18px 0 14px;isolation:isolate}
+.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+.cam .guide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cam .guide ellipse{fill:none;stroke:rgba(255,255,255,.9);stroke-width:2;stroke-dasharray:3 7;stroke-linecap:round}
+.cam .guide .dim{fill:rgba(7,19,31,.45);fill-rule:evenodd;stroke:none}
+.cam .live{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:6px;background:rgba(7,19,31,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font:600 11px/1 var(--font);letter-spacing:.06em;padding:6px 9px;border-radius:99px}
+.cam .live i{width:6px;height:6px;border-radius:50%;background:#ff5a5a;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.prog{display:flex;justify-content:space-between;align-items:center;font:600 11px/1 var(--font);color:var(--mut);margin-bottom:8px}
+.bar{height:6px;background:#e6eef4;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--brand-d));border-radius:99px;transition:width .35s cubic-bezier(.2,.7,.2,1)}
+.status{min-height:20px;margin:8px 0 0;font-size:12.5px;color:var(--mut)}
+.privacy{display:grid;grid-template-columns:18px 1fr;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--ln);font-size:11px;line-height:1.5;color:var(--mut)}
+.privacy svg{width:16px;height:16px;color:var(--brand-d);margin-top:2px}
+
+/* ---------- success ---------- */
+.ok{text-align:center;padding:24px 18px 18px}
+.ok .tick{width:48px;height:48px;margin:0 auto 12px;border-radius:50%;background:var(--ok);display:grid;place-items:center;box-shadow:0 0 0 6px rgba(31,157,107,.12)}
+.ok .tick.wait{background:#d98a1c;box-shadow:0 0 0 6px rgba(217,138,28,.14)}
+.ok .tick svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s .15s forwards ease-out}
+@keyframes draw{to{stroke-dashoffset:0}}
+.receipt{margin:22px 0 0;border:1px solid var(--ln);border-radius:var(--r);text-align:left;overflow:hidden;background:#fbfdfe}
+.receipt div{display:flex;justify-content:space-between;gap:16px;padding:12px 14px;font-size:13.5px}
+.receipt div+div{border-top:1px dashed var(--ln-2)}
+.receipt dt{color:var(--mut);flex:none}
+.receipt.review{margin-top:20px}.receipt.review div{padding:14px}.receipt.review dd{font-size:14.5px}
+.receipt dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:max(22px,env(safe-area-inset-bottom));transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--ink);color:#fff;padding:10px 15px;border-radius:11px;font-size:12.5px;z-index:99;max-width:min(92%,420px);box-shadow:0 12px 30px -8px rgba(11,34,54,.5);transition:.25s;display:flex;gap:10px;align-items:flex-start}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast:before{content:"";width:7px;height:7px;border-radius:50%;background:#ff7a7a;margin-top:7px;flex:none}
+
+.foot{margin-top:auto;padding-top:22px;text-align:center;font-size:11px;color:#8aa0b1}
+/* ---------- extras ---------- */
+.link{background:none;border:0;padding:0;color:var(--brand-d);font:600 12px/1.2 var(--font);cursor:pointer}
+.link:hover{text-decoration:underline}
+.back{display:inline-flex;align-items:center;gap:4px;margin:0 0 14px;color:var(--mut)}
+.ferr{margin:5px 0 0;font-size:11.5px;color:var(--err)}.ferr:empty{display:none}
+input[aria-invalid=true]{border-color:var(--err)}input[aria-invalid=true]:focus{box-shadow:0 0 0 4px rgba(201,60,60,.14)}
+#matric{text-transform:uppercase}#matric::placeholder{text-transform:none}
+label.check{display:flex;gap:9px;align-items:flex-start;margin:14px 0 0;font:500 12.5px/1.4 var(--font);color:var(--ink-2);cursor:pointer}
+.check input{width:16px;height:16px;min-width:16px;padding:0;margin:1px 0 0;border-radius:5px;accent-color:var(--brand-d);cursor:pointer}
+.check small{display:block;margin-top:2px;color:var(--mut);font-size:11px}
+.note{margin:12px 0 0;padding:8px 10px;border-radius:9px;background:#fff7e6;color:#80530a;font-size:12px;line-height:1.45;box-shadow:inset 0 0 0 1px #f0dcae}
+.recent{margin-top:18px;padding-top:13px;border-top:1px solid var(--ln)}
+.rh{display:flex;justify-content:space-between;align-items:center;font:600 11px/1 var(--font);color:var(--mut);margin-bottom:8px}
+.recent ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.recent li{display:flex;justify-content:space-between;gap:12px;font-size:12px}
+.recent li span{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent li em{font-style:normal;color:var(--mut);flex:none}
+.net{position:fixed;top:0;left:0;right:0;z-index:98;background:#80530a;color:#fff;text-align:center;font:600 13px/1.2 var(--font);padding:calc(10px + env(safe-area-inset-top)) 12px 10px}
+.scanner{position:fixed;inset:0;z-index:97;background:rgba(7,19,31,.78);display:grid;place-items:center;padding:20px}
+.sc-in{width:100%;max-width:420px;background:#fff;border-radius:var(--r-lg);padding:20px}
+.sc-head{display:flex;justify-content:space-between;align-items:center}
+.sc-head b{font:800 15px/1.2 var(--display);letter-spacing:-.02em}
+.sc-cam{margin:14px 0 12px}.sc-cam video{transform:none}
+.sc-frame{position:absolute;inset:18%;border:2.5px solid rgba(255,255,255,.92);border-radius:18px;box-shadow:0 0 0 999px rgba(7,19,31,.38);pointer-events:none}
+/* ---------- premium pass ---------- */
+.pass-wrap{margin-top:14px;text-align:left}
+.pass{--rx:0deg;--ry:0deg;--mx:50%;--my:30%;position:relative;overflow:hidden;border-radius:16px;padding:16px 16px 12px;color:#fff;min-height:176px;display:flex;flex-direction:column;
+  background:radial-gradient(120% 90% at 100% 0%,rgba(92,200,255,.32),transparent 55%),radial-gradient(90% 80% at 0% 100%,rgba(201,162,74,.16),transparent 60%),linear-gradient(135deg,#0f2f4a,#0b2236 55%,#143a5c);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 18px 34px -14px rgba(11,34,54,.55);
+  transform:perspective(800px) rotateX(var(--rx)) rotateY(var(--ry));transition:transform .18s ease-out;will-change:transform}
+.pass:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.04) 0 1px,transparent 1px 7px);pointer-events:none}
+.pass-sheen{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.16),transparent 45%);mix-blend-mode:screen}
+.pass>*{position:relative}.pass>.pass-sheen{position:absolute}
+.pass-top{display:flex;justify-content:space-between;align-items:center}
+.pass-brand{display:flex;align-items:center;gap:7px}
+.pass-brand img{width:18px;height:18px;filter:brightness(0) invert(1);display:block}
+.pass-brand b{font:800 12px/1 var(--display);letter-spacing:.01em}
+.pass-pill{font:700 9.5px/1 var(--font);letter-spacing:.09em;text-transform:uppercase;padding:5px 8px;border-radius:99px;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pass[data-state=verified] .pass-pill{background:rgba(48,200,140,.18);color:#8ff0c5;box-shadow:inset 0 0 0 1px rgba(143,240,197,.4)}
+.pass[data-state=pending] .pass-pill{background:rgba(240,170,60,.18);color:#ffd48a;box-shadow:inset 0 0 0 1px rgba(255,212,138,.4)}
+.pass-chip{width:32px;height:24px;border-radius:6px;margin:14px 0 10px;background:linear-gradient(135deg,#f5e0a3,#c9a24a 55%,#f0d48a);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);position:relative}
+.pass-chip:after{content:"";position:absolute;inset:5px 8px;border:1px solid rgba(80,55,10,.4);border-radius:3px}
+.pass-name{font:800 17px/1.2 var(--display);letter-spacing:-.01em;overflow-wrap:anywhere}
+.pass-mat{font:500 12px/1.3 var(--mono);letter-spacing:.14em;color:#bcd9ee;margin-top:3px}
+.pass-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.pass-grid small{display:block;font:600 9px/1 var(--font);letter-spacing:.1em;text-transform:uppercase;color:#7fa0b8;margin-bottom:3px}
+.pass-grid b{font:600 12px/1.3 var(--font);overflow-wrap:anywhere}
+.pass-foot{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px;font:500 10.5px/1.3 var(--font);color:#8fb0c6;border-top:1px dashed rgba(255,255,255,.16);margin-top:12px}
+.pass-foot .p-ref{font-family:var(--mono);letter-spacing:.06em}
+.done-actions{display:grid;gap:0;margin-top:6px}
+.streak{margin:12px 0 0;font-size:11.5px;color:var(--mut)}.streak:empty{display:none}
+@media(prefers-reduced-motion:reduce){.pass{transform:none!important}}
+
+/* ---------- dropdown search ---------- */
+.dd-search{position:sticky;top:0;z-index:1;width:calc(100% - 4px);height:32px;margin:1px 2px 5px;padding:0 10px;font-size:12.5px;border-radius:8px;background:#fff}
+.dd-search:focus{box-shadow:0 0 0 3px rgba(47,159,214,.16)}
+
+/* ---------- scanner v2 ---------- */
+.sc-cam{margin:12px 0 8px;aspect-ratio:1/1}.sc-cam video{transform:none}
+.sc-frame{position:absolute;inset:16%;pointer-events:none;border-radius:12px;box-shadow:0 0 0 999px rgba(7,19,31,.42);
+  background:linear-gradient(#fff,#fff) top left/22px 3px,linear-gradient(#fff,#fff) top left/3px 22px,linear-gradient(#fff,#fff) top right/22px 3px,linear-gradient(#fff,#fff) top right/3px 22px,
+  linear-gradient(#fff,#fff) bottom left/22px 3px,linear-gradient(#fff,#fff) bottom left/3px 22px,linear-gradient(#fff,#fff) bottom right/22px 3px,linear-gradient(#fff,#fff) bottom right/3px 22px;background-repeat:no-repeat}
+.sc-line{position:absolute;left:16%;right:16%;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#5cc8ff,transparent);box-shadow:0 0 12px #5cc8ff;animation:sweep 2.2s ease-in-out infinite;pointer-events:none}
+@keyframes sweep{0%,100%{top:18%}50%{top:80%}}
+.sc-cam.hit:after{content:"";position:absolute;inset:0;background:rgba(31,157,107,.4);animation:flash .5s forwards}
+@keyframes flash{to{opacity:0}}
+.sc-zoom{height:22px;padding:0;border:0;background:none;accent-color:var(--brand-d);margin:0 0 4px;box-shadow:none!important}
+.sc-tools{display:flex;gap:7px;margin-top:10px}
+.sc-tools button{flex:1;height:34px;border-radius:9px;border:0;background:#fff;box-shadow:inset 0 0 0 1px var(--ln-2);font:600 11.5px/1 var(--font);color:var(--ink-2);cursor:pointer}
+.sc-tools button[aria-pressed=true]{background:var(--ink);color:#fff;box-shadow:none}
+.sc-tools button:hover{background:var(--bg)}.sc-tools button[aria-pressed=true]:hover{background:#13334f}
+@media(prefers-reduced-motion:reduce){.sc-line{animation:none;top:50%}}
+.hide{display:none!important}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style><style>
+.oc-fab{position:fixed;top:calc(10px + env(safe-area-inset-top));right:12px;z-index:60;border:0;border-radius:999px;padding:9px 14px;background:#011A65;color:#fff;font:700 12.5px Inter,system-ui,sans-serif;box-shadow:0 6px 18px rgba(1,26,101,.3);cursor:pointer}
+.oc-ov{position:fixed;inset:0;z-index:70;background:rgba(1,26,101,.55);display:flex;align-items:flex-end;justify-content:center}
+.oc-in{background:#fff;color:#0b2236;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));font:14px/1.5 Inter,system-ui,sans-serif}
+.oc-sm{border-radius:20px;margin:12px;padding:20px;max-width:420px;text-align:center}@media(min-width:600px){.oc-ov{align-items:center}.oc-in{border-radius:20px}}
+.oc-h{display:flex;justify-content:space-between;align-items:center;font-size:17px}.oc-tabs,.oc-seg{display:flex;gap:6px;margin:12px 0;overflow:auto}
+.oc-tabs button,.oc-seg button{flex:1;border:0;border-radius:10px;padding:9px 10px;background:#eef3f8;color:#41586b;font:600 13px Inter,system-ui,sans-serif;white-space:nowrap;cursor:pointer}.oc-tabs .on,.oc-seg .on{background:#011A65;color:#fff}
+.oc-in h4{margin:16px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.4px;color:#5f7689}.oc-m{color:#5f7689;font-size:13px;margin:2px 0}.warn{color:#9a5b00}
+.oc-c{border:1px solid #e3eaf1;border-radius:14px;padding:11px 13px;margin:8px 0}.oc-c.live{border-color:#1b8a4b;background:#eefaf3}.oc-c.next{border-color:#FBB917;background:#fffaec}
+.oc-p{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#FBB917;color:#011A65;margin-left:4px}.oc-p.g{background:#d9f3e4;color:#14703c}.oc-p.w{background:#fff0cf;color:#8a5a00}
+.oc-nav{display:flex;justify-content:space-between;align-items:center;margin:6px 0}.oc-nav button{border:0;background:#eef3f8;border-radius:10px;width:40px;height:34px;font-size:18px;cursor:pointer}
+.oc-upd{background:#fffaec;border:1px solid #f4d98a;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:13px}.oc-upd small{color:#8a7a4a}
+.oc-note{background:#eef3f8;border-radius:10px;padding:8px 10px;font-size:12.5px;color:#41586b}
+.oc-chip{display:inline-flex;gap:6px;align-items:center;background:#eef3f8;border-radius:99px;padding:5px 6px 5px 12px;margin:3px;font-weight:600}.oc-chip button{border:0;background:none;font-size:16px;cursor:pointer;color:#5f7689}
+.oc-row{display:flex;gap:8px;margin:10px 0}.oc-row input,.oc-in select{flex:1;width:100%;border:1px solid #d6e0e8;border-radius:10px;padding:10px 12px;font:inherit}.oc-l{display:block;font-size:12px;color:#5f7689;margin:8px 0 4px}
+.oc-b{border:0;border-radius:10px;padding:10px 14px;background:#011A65;color:#fff;font:700 13px Inter,system-ui,sans-serif;cursor:pointer;margin:6px 6px 0 0}.oc-b.full{width:100%;margin:10px 0 0;padding:13px}.oc-b.sm{padding:5px 10px;font-size:12px;margin:0 0 0 6px}.oc-b.alt{background:#eef3f8;color:#011A65}.oc-b.danger{background:#fde4e4;color:#b02a2a}.oc-b:disabled{opacity:.6}
+.oc-bar{height:8px;background:#e8eef4;border-radius:99px;margin:8px 0;overflow:hidden}.oc-bar i{display:block;height:100%;background:linear-gradient(90deg,#FBB917,#011A65)}
+.oc-tot{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center;font-size:11px;color:#5f7689}.oc-tot b{display:block;font-size:18px;color:#011A65}
+.oc-dd{position:relative}.oc-ddb{width:100%;text-align:left;border:1px solid #d6e0e8;border-radius:10px;padding:11px 36px 11px 12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235f7689' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;font:600 14px Inter,system-ui,sans-serif;color:#0b2236;cursor:pointer}.oc-ddl{position:absolute;z-index:5;left:0;right:0;top:100%;margin-top:6px;background:#fff;border:1px solid #d6e0e8;border-radius:12px;box-shadow:0 14px 34px rgba(1,26,101,.18);max-height:220px;overflow:auto;padding:6px}.oc-ddl button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:8px;font:500 14px Inter,system-ui,sans-serif;color:#0b2236;cursor:pointer}.oc-ddl button:hover,.oc-ddl button.on{background:#eef3f8;font-weight:700}
+.oc-chk{display:inline-flex;gap:6px;align-items:center;margin:4px 10px 4px 0}.oc-timer{font-size:26px;font-weight:800;color:#011A65;margin:8px 0}
+</style>
+<style>:root{--brand:#E9A70F;--brand-d:#8A5F00;--brand-xd:#6B4A00;--brand-tint:#FFF4D2;--ink:#0A1747;--ink-2:#26346B;--mut:#667091;--ln:#E3E6F1;--ln-2:#CDD2E5;--bg:#F3F4F9;--gold:#F2B01E;--font:'Instrument Sans',system-ui,sans-serif;--display:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif}
+body{background:radial-gradient(600px 300px at 50% -80px,rgba(242,176,30,.16),transparent),var(--bg);padding-bottom:104px}
+:focus-visible{outline-color:var(--brand-d)}
+@media(min-width:960px){.aside{background:radial-gradient(500px 400px at 100% 0,rgba(242,176,30,.18),transparent),linear-gradient(165deg,#0A1747,#011A65)}.aside:before{opacity:.25}.main{padding-bottom:40px}}
+.points .ic{background:rgba(242,176,30,.14);color:var(--gold);box-shadow:inset 0 0 0 1px rgba(242,176,30,.3)}
+.card{border-radius:20px}.btn{border-radius:12px}.btn.primary{background:var(--gold);color:var(--ink);box-shadow:none}.btn.primary:hover{background:#FFC43D}
+input:focus,.dd.open .dd-btn{border-color:var(--gold);box-shadow:0 0 0 4px rgba(242,176,30,.24)}
+.stepper li.done .n{background:var(--gold);color:var(--ink)}.stepper li.done+li:before,.stepper li.on:before{background:var(--gold)}
+.bar i{background:linear-gradient(90deg,var(--gold),#F7CF6A)}
+.pass{background:radial-gradient(120% 90% at 100% 0,rgba(242,176,30,.3),transparent 55%),linear-gradient(135deg,#0A1747,#011A65 60%,#10307a)}
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:max(14px,env(safe-area-inset-bottom));z-index:60;display:flex;gap:2px;padding:6px;width:min(94vw,470px);background:#0A1747;border-radius:22px;box-shadow:0 16px 36px -10px rgba(10,23,71,.6)}
+.dock button{flex:1;display:grid;justify-items:center;gap:4px;padding:9px 2px 8px;border:0;border-radius:16px;background:none;color:#A9B4E0;font:600 11px/1 var(--font);cursor:pointer}
+.dock svg{width:20px;height:20px}.dock button.on{background:var(--gold);color:#0A1747}
+.page{max-width:720px;margin:0 auto;padding:max(24px,env(safe-area-inset-top)) 18px 24px}
+.page .oc-in{background:none;max-height:none;overflow:visible;padding:0;max-width:none;border-radius:0}
+.page .oc-h h2{font:800 28px/1.1 var(--display);letter-spacing:-.03em;margin:0 0 16px}
+.oc-in h4{text-transform:none;letter-spacing:-.01em;font:700 15px var(--display);color:var(--ink);margin:24px 0 8px}
+.oc-c{background:#fff;border-radius:16px;border-color:var(--ln);padding:14px 16px}.oc-c.live{border-color:#18915F;background:#EAF8F1}.oc-c.next{border-color:var(--gold);background:var(--brand-tint)}
+.oc-p{background:var(--gold);color:#0A1747}.oc-p.g{background:#D9F3E4;color:#14703C}.oc-p.w{background:#FFF0CF;color:#8A5A00}
+.oc-seg button,.oc-nav button,.oc-chip{background:#E9ECF6;color:var(--ink-2)}.oc-seg .on{background:#0A1747;color:#fff}
+.oc-b{background:#0A1747;border-radius:12px}.oc-b.alt{background:#E9ECF6;color:#0A1747}.oc-b.danger{background:#FDE4E4;color:#B02A2a}
+.oc-bar{height:8px}.oc-bar i{background:linear-gradient(90deg,var(--gold),#F7CF6A)}.oc-tot b,.oc-timer{color:#0A1747}
+.oc-ov{background:rgba(10,23,71,.6)}.oc-row input{background:#fff}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:16px;color:#fff;border-radius:22px;padding:20px;margin:0 0 14px;background:radial-gradient(120% 100% at 100% 0,rgba(242,176,30,.28),transparent 60%),#0A1747}
+.hero small{color:var(--gold);font:700 12.5px var(--font)}.hero b{display:block;font:800 19px/1.25 var(--display);margin:4px 0}.hero span{color:#B4BEE6;font-size:12.5px}
+.ring{--p:0;width:80px;height:80px;border-radius:50%;flex:none;display:grid;place-content:center;text-align:center;background:radial-gradient(closest-side,#0A1747 80%,transparent 81%),conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,255,255,.16) 0)}
+.ring b{font:800 19px/1 var(--display);margin:0;color:#fff}.ring small{color:#B4BEE6;font:500 10px var(--font)}
+</style>
+<style>.aibar{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:14px 16px;margin-bottom:12px}.aibar b{font:800 26px var(--display);color:#0A1747}.aibar span{color:var(--mut)}
+.ailog{display:grid;gap:10px;margin:8px 0 12px}.aim{display:flex;flex-direction:column;gap:6px;max-width:88%}.aim.user{align-self:flex-end;align-items:flex-end;margin-left:auto}.aim img{max-width:200px;border-radius:12px}
+.aib{padding:10px 13px;border-radius:16px;background:#E9ECF6;white-space:pre-wrap;overflow-wrap:anywhere}.aim.user .aib{background:#0A1747;color:#fff}.aim.err .aib{background:#FDE4E4;color:#B02A2A}
+.aiprev{display:flex;align-items:center;gap:10px;margin:6px 0}.aiprev img{width:64px;height:64px;object-fit:cover;border-radius:12px}.oc-row .oc-b{margin:0;flex:none}.oc-b:disabled{opacity:.5}</style>
+<style>
+body{font-size:13px}
+h2{font-size:16px}.sub{font-size:12px}
+.card{padding:16px;border-radius:16px}@media(max-width:420px){.card{padding:15px 14px}}
+.field{margin-top:11px}label{font-size:11.5px}
+input,.dd-btn{height:37px;font-size:13px}.code-in{height:44px;font-size:17px}
+.btn{height:37px;font-size:13px;margin-top:13px}.btn.alt{height:33px;font-size:12px}
+.aside h1{font-size:clamp(22px,2.3vw,28px)}.aside .lede{font-size:13px}.points b{font-size:12.5px}.points span{font-size:12px}
+.stepper li{font-size:10.5px}
+.pass{min-height:150px;padding:14px 14px 10px}.pass-name{font-size:15px}
+.receipt div{padding:10px 12px;font-size:13px}
+.page{padding-top:max(18px,env(safe-area-inset-top))}
+.page .oc-h h2{font-size:21px;margin-bottom:12px}
+.oc-in h4{font-size:14px;margin:18px 0 6px}
+.oc-c{padding:11px 13px;border-radius:14px;font-size:13px}.oc-m{font-size:12px}
+.oc-b{padding:8px 12px;font-size:12.5px;border-radius:10px}.oc-b.full{padding:11px}
+.oc-seg button,.oc-nav button{font-size:12.5px;padding:7px 9px}
+.hero{padding:15px;border-radius:18px}.hero b{font-size:16px}.hero span{font-size:12px}.ring{width:66px;height:66px}.ring b{font-size:16px}
+.aibar{padding:11px 13px}.aibar b{font-size:21px}.aib{padding:8px 11px;font-size:13px}
+.dock{padding:5px;border-radius:20px;width:min(94vw,440px)}.dock button{font-size:10px;padding:7px 2px 6px;gap:3px}.dock svg{width:18px;height:18px}
+body{padding-bottom:88px}
+</style>
+</head>
+<body>
+<script>
+function showErr(m){var d=document.getElementById('err');if(!d){d=document.createElement('div');d.id='err';d.style.cssText='position:fixed;top:0;left:0;right:0;background:#c93c3c;color:#fff;padding:12px;z-index:999;font:13px sans-serif';document.body.appendChild(d)}d.textContent='Page error: '+m}
+addEventListener('error',function(e){showErr(e.message+(e.filename?' ('+e.filename.split('/').pop()+')':''))});
+addEventListener('unhandledrejection',function(e){showErr((e.reason&&e.reason.message)||e.reason)});
+</script>
+
+<div class="shell">
+
+  <aside class="aside">
+    <div class="brand"><div class="mark"><img src="data:image/png;base64,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" alt=""></div><b>Our Class Room</b></div>
+    <div>
+      <h1>Attendance that holds up.</h1>
+      <p class="lede">Check in to class in under a minute. Verified on your device, recorded against the register.</p>
+    </div>
+    <ul class="points">
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 10h4M7 14h10"/></svg></span><div><b>Enter the class code</b><span>Shown by your lecturer or class rep.</span></div></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span><div><b>Confirm your details</b><span>Name, department and matric number.</span></div></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span><div><b>Quick liveness check</b><span>A few head turns on camera. Nothing is uploaded.</span></div></li>
+    </ul>
+    <small>© Our Class Room · Smarter attendance. Better accountability.</small><button type="button" class="lnk" data-ocr-install hidden style="display:block;margin:8px auto 0;background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit">Install Our Class Room</button>
+  </aside>
+
+  <main class="main"><div class="main-in">
+
+    <div class="brand m-brand"><div class="mark"><img src="data:image/png;base64,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" alt=""></div><b>Our Class Room</b></div>
+
+    <ol class="stepper" id="stepper" aria-label="Progress">
+      <li class="on"><span class="n"><span>1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><em>Code</em></li>
+      <li><span class="n"><span>2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><em>Details</em></li>
+      <li><span class="n"><span>3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><em>Confirm</em></li>
+      <li><span class="n"><span>4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><em>Verify</em></li>
+    </ol>
+
+    <section class="card" id="step1">
+      <h2>Mark attendance</h2>
+      <p class="sub">Enter the code shown by your lecturer or class rep.</p>
+      <div class="field"><label for="code">Attendance code</label>
+        <input id="code" class="code-in" maxlength="8" placeholder="K7M2QX" autocomplete="off" autocapitalize="characters" spellcheck="false" inputmode="text"></div>
+      <button class="btn" id="check">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn alt hide" id="scan" type="button">Scan QR code instead</button>
+      <div class="recent hide" id="recent"><div class="rh"><span>Recent check-ins on this device</span><button type="button" class="link" id="clearHist">Clear</button></div><ul id="recentList"></ul></div>
+    </section>
+
+    <section class="card hide" id="step2">
+      <button type="button" class="link back" id="changeCode">← Change code</button><br>
+      <span class="eyebrow"><i></i><span id="info"></span></span>
+      <h2>Your details</h2>
+      <p class="sub">Use the same details as on your class register.</p>
+      <p class="note hide" id="dupNote" role="status"></p>
+      <div class="field"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="As written on your register"><p class="ferr" id="nameErr"></p></div>
+      <div class="field"><label id="deptLabel">Department</label><div id="dept"></div><p class="ferr" id="deptErr"></p></div>
+      <div class="field"><label for="matric">Matriculation / registration number</label><input id="matric" autocapitalize="characters" autocomplete="off" placeholder="e.g. 20/1234"><p class="ferr" id="matricErr"></p></div>
+      <label class="check"><input type="checkbox" id="remember"><span>Remember my details on this device<small>Saves your name, department and matric number here. Don’t use on a shared device.</small></span></label>
+      <button class="btn" id="submit">Submit attendance <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </section>
+
+    <section class="card hide" id="stepReview">
+      <h2>Confirm your details</h2>
+      <p class="sub" id="rvSub"></p>
+      <p class="note hide" id="dupNote2" role="status"></p>
+      <div class="pass-wrap" id="rvPass"></div>
+      <button class="btn" id="confirm">Yes, continue to verification <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn alt" id="editDetails">Edit details</button>
+    </section>
+
+    <section class="card hide" id="step3">
+      <span class="eyebrow"><i></i><span>Live verification</span></span>
+      <h2 id="instr">Starting camera…</h2>
+      <div class="cam"><video id="vid" playsinline muted></video>
+        <svg class="guide" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path class="dim" d="M0 0H400V300H0Z M200 28C148 28 118 78 118 150C118 222 148 272 200 272C252 272 282 222 282 150C282 78 252 28 200 28Z"/><ellipse cx="200" cy="150" rx="82" ry="122"/></svg>
+        <div class="live"><i></i>LIVE</div></div>
+      <div class="prog"><span>Progress</span><span id="pct">0%</span></div>
+      <div class="bar"><i id="bar"></i></div>
+      <p class="status" id="sub" role="status" aria-live="polite"></p>
+      <button class="btn primary" id="retry" style="display:none;margin-top:14px">Try again</button>
+      <button class="btn alt" id="alt">Camera not working? Request host approval</button>
+      <div class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+        <span>Your video is processed on this device only. No photo or video is uploaded or stored; only the pass/fail result is recorded. A liveness check shows a real person is present, it does not prove who they are, so your matric number is also checked against the register.</span></div>
+    </section>
+
+    <section class="card hide ok" id="done">
+      <div class="tick" id="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l5 5L19 7"/></svg></div>
+      <h2 id="doneTitle">Attendance recorded</h2>
+      <p class="sub" id="doneSub">You’re all set. You can close this page.</p>
+      <div class="pass-wrap" id="donePass"></div>
+      <p class="streak" id="streak" role="status"></p>
+      <div class="done-actions">
+        <button class="btn primary" id="savePass" type="button">Save pass</button>
+        <button class="btn alt" id="another" type="button">Mark another class</button>
+      </div>
+    </section>
+
+    <div class="foot">Our Class Room · Smarter attendance. Better accountability.</div>
+  </div></main>
+</div>
+<main class="page hide" id="ocPanel"><div class="oc-in"><div class="oc-h"><h2 id="pgTitle">Timetable</h2></div><div id="ocBody"></div></div></main>
+<nav class="dock" id="ocTabs" aria-label="Main"><button data-p="ck" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2M8 12h8"/></svg>Check in</button><button data-p="tt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Timetable</button><button data-p="hi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9M3 4v5h5M12 7v5l3 2"/></svg>History</button><button data-p="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Ask AI</button><button data-p="rp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reports</button><button data-p="st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h0a1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Settings</button></nav>
+<div class="oc-ov hide" id="ocChal" role="alertdialog" aria-modal="true" aria-live="assertive"><div class="oc-in oc-sm" id="ocChalBody"></div></div>
+<div id="net" class="net hide" role="status">You’re offline. Reconnect to continue.</div>
+<div class="scanner hide" id="scanner" role="dialog" aria-modal="true" aria-label="Scan QR code"><div class="sc-in">
+  <div class="sc-head"><b>Scan class QR code</b><button type="button" class="link" id="scClose">Close</button></div>
+  <div class="cam sc-cam" id="scCam"><video id="scVid" playsinline muted></video><div class="sc-frame"></div><div class="sc-line"></div></div>
+  <input type="range" id="scZoom" class="sc-zoom hide" aria-label="Zoom" step="0.1">
+  <p class="sub" id="scMsg" role="status"></p>
+  <div class="sc-tools"><button type="button" id="scTorch" class="hide" aria-pressed="false">Flash</button><button type="button" id="scFlip" class="hide">Flip camera</button><button type="button" id="scCap">Take photo</button><button type="button" id="scPhoto">From gallery</button></div>
+  <input type="file" id="scFile" accept="image/*" hidden><input type="file" id="scFile2" accept="image/*" capture="environment" hidden></div></div>
+<div id="toast" role="alert"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// Runtime config. Only the public anon key belongs here, never a service-role key.
+window.OURCLASSROOM = {
+  SUPABASE_URL: "https://lfgyrtqsliytbzueokuw.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmZ3lydHFzbGl5dGJ6dWVva3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODQyOTUsImV4cCI6MjEwOTc2MDI5NX0.CZJUKT8aIZtu2ZBvaa9vESm_AmZVp_oKgUquzmlQn-E"
+};
+</script>
+<script>
+const sb = supabase.createClient(OURCLASSROOM.SUPABASE_URL, OURCLASSROOM.SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3600); }
+const setStep = n => [...$('stepper').children].forEach((li, i) => { li.className = i + 1 < n ? 'done' : i + 1 === n ? 'on' : ''; });
+const LS = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
+const K_PROFILE = 'ourclassroom.profile', K_HIST = 'ourclassroom.history';
+// one-time migration of saved data from the former app name
+try { [['classsync.profile', K_PROFILE], ['classsync.history', K_HIST]].forEach(([o, n]) => { const v = localStorage.getItem(o); if (v !== null && localStorage.getItem(n) === null) localStorage.setItem(n, v); localStorage.removeItem(o); }); } catch {}
+const syncNet = () => $('net').classList.toggle('hide', navigator.onLine);
+addEventListener('online', syncNet); addEventListener('offline', syncNet); syncNet();
+function renderRecent() {
+  const h = LS.get(K_HIST, []), ul = $('recentList'); ul.innerHTML = ''; $('recent').classList.toggle('hide', !h.length);
+  h.slice(0, 3).forEach(x => { const li = document.createElement('li'), a = document.createElement('span'), b = document.createElement('em');
+    a.textContent = x.course; b.textContent = new Date(x.at).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + (x.pending ? ' · Pending' : ''); li.append(a, b); ul.appendChild(li); });
+}
+$('clearHist').onclick = () => { LS.del(K_HIST); renderRecent(); };
+renderRecent();
+const setPct = p => { $('bar').style.width = p + '%'; $('pct').textContent = Math.round(p) + '%'; };
+function makeDropdown(el, ph, items = []) {
+  el.classList.add('dd'); let value = null, text = '', hl = -1, view = items, q = '';
+  const searchable = items.length > 7;
+  el.innerHTML = '<button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="deptLabel"><span></span></button><div class="dd-list" role="listbox">' + (searchable ? '<input type="search" class="dd-search" placeholder="Search…" aria-label="Search" autocomplete="off">' : '') + '<div class="dd-rows"></div></div>';
+  const btn = el.firstChild, lab = btn.firstChild, list = el.lastChild, rowsBox = list.querySelector('.dd-rows'), search = list.querySelector('.dd-search');
+  const mark = () => [...rowsBox.children].forEach((r, i) => { r.classList.toggle('hl', i === hl); if (i === hl) r.scrollIntoView({ block: 'nearest' }); });
+  const draw = () => {
+    view = items.filter(i => i.label.toLowerCase().includes(q)); hl = -1;
+    rowsBox.innerHTML = view.length ? '' : '<div class="dd-item empty">' + (items.length ? 'No match' : 'No options available') + '</div>';
+    view.forEach(i => { const d = document.createElement('div'); d.className = 'dd-item' + (i.value === value ? ' sel' : ''); d.setAttribute('role', 'option');
+      d.textContent = i.label; d.onclick = () => pick(i); rowsBox.appendChild(d); });
+  };
+  const setOpen = o => { el.classList.toggle('open', o); btn.setAttribute('aria-expanded', o); if (o && search) { search.value = ''; q = ''; draw(); setTimeout(() => search.focus(), 0); } if (!o) hl = -1; };
+  const pick = i => { value = i.value; text = i.label; lab.textContent = i.label; btn.classList.add('has'); setOpen(false); draw(); };
+  search?.addEventListener('input', () => { q = search.value.trim().toLowerCase(); draw(); });
+  lab.textContent = ph; draw();
+  btn.onclick = () => setOpen(!el.classList.contains('open'));
+  el.addEventListener('keydown', e => {
+    const open = el.classList.contains('open');
+    if (e.key === 'Escape') { setOpen(false); btn.focus(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!open) { setOpen(true); return; } if (!view.length) return; hl = Math.max(0, Math.min(view.length - 1, hl + (e.key === 'ArrowDown' ? 1 : -1))); mark(); }
+    else if (e.key === 'Enter' && open && hl >= 0) { e.preventDefault(); pick(view[hl]); }
+  });
+  document.addEventListener('click', e => { if (!el.contains(e.target)) setOpen(false); });
+  return { get: () => value, text: () => text, set: v => { const i = items.find(x => x.value === v); if (i) pick(i); } };
+}
+
+let dd, code, info, sess, lastPass;
+(async () => {
+  const { data, error } = await sb.from('departments').select('id,name').order('name');
+  if (error) toast('Could not load departments: ' + error.message);
+  else if (!data.length) toast('No departments have been added yet');
+  dd = makeDropdown($('dept'), 'Select department', (data || []).map(d => ({ value: d.id, label: d.name })));
+  const p = LS.get(K_PROFILE, null);
+  if (p) { $('name').value = p.name || ''; $('matric').value = p.matric || ''; if (p.dept) dd.set(p.dept); $('remember').checked = true; }
+  const q = new URLSearchParams(location.search).get('code');
+  if (q) { $('code').value = q; check(); }
+})();
+
+async function check() {
+  code = $('code').value.trim().toUpperCase();
+  if (!code) return toast('Enter the attendance code');
+  if (!navigator.onLine) return toast('You’re offline. Check your connection and try again.');
+  $('check').disabled = true;
+  const { data, error } = await sb.rpc('get_session_public', { p_code: code });
+  $('check').disabled = false;
+  if (error || !data?.length) return toast('Invalid or expired attendance code');
+  info = data[0].course_code + ' — ' + data[0].course_title;
+  sess = data[0]; $('info').textContent = info;
+  const prior = LS.get(K_HIST, []).find(x => x.code === code && Date.now() - x.at < 12 * 3600e3);
+  const note = prior ? 'You already submitted attendance for this class on this device at ' + new Date(prior.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '. Submitting again may be rejected.' : '';
+  ['dupNote', 'dupNote2'].forEach(id => { $(id).textContent = note; $(id).classList.toggle('hide', !prior); });
+  $('step1').classList.add('hide');
+  const p = LS.get(K_PROFILE, null);
+  if (p && p.name && p.matric && p.dept && dd && dd.get() === p.dept) { details = { name: p.name, matric: p.matric, dept: p.dept }; showReview(true); }
+  else { $('step2').classList.remove('hide'); setStep(2); $('name').focus(); }
+}
+$('check').onclick = check;
+$('code').addEventListener('input', () => { const v = $('code').value, c = v.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (c !== v) $('code').value = c; });
+$('code').addEventListener('paste', e => {
+  const t = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+  if (/code=|https?:/i.test(t)) { e.preventDefault(); const c = parseCode(t); if (c) { $('code').value = c; check(); } else toast('That link doesn’t contain an attendance code.'); }
+});
+$('code').addEventListener('keydown', e => e.key === 'Enter' && check());
+
+let details, stream, landmarker, running = false;
+const WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm';
+const MODEL = 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+const setI = t => $('instr').textContent = t;
+const stopCam = () => { running = false; stream?.getTracks().forEach(t => t.stop()); stream = null; };
+const pose = l => ({ yaw: (l[1].x - l[234].x) / (l[454].x - l[234].x), pitch: (l[1].y - l[10].y) / (l[152].y - l[10].y) });
+
+const setErr = (id, msg) => { const e = $(id + 'Err'), i = $(id); if (e) e.textContent = msg || ''; if (i && i.tagName === 'INPUT') i.setAttribute('aria-invalid', msg ? 'true' : 'false'); };
+['name', 'matric'].forEach(id => $(id).addEventListener('input', () => setErr(id, '')));
+$('dept').addEventListener('click', () => setErr('dept', ''));
+$('name').addEventListener('keydown', e => e.key === 'Enter' && $('matric').focus());
+$('matric').addEventListener('keydown', e => e.key === 'Enter' && $('submit').click());
+$('changeCode').onclick = () => { $('step2').classList.add('hide'); $('step1').classList.remove('hide'); setStep(1); $('code').focus(); };
+const smartName = () => { const v = $('name').value.trim(); if (v && (v === v.toLowerCase() || v === v.toUpperCase())) $('name').value = v.toLowerCase().replace(/(^|[\s'’\-])(\p{L})/gu, (m, a, c) => a + c.toUpperCase()); };
+$('name').addEventListener('blur', smartName);
+function mkRef(str) { let h = 5381; for (let k = 0; k < str.length; k++) h = ((h << 5) + h + str.charCodeAt(k)) | 0; return 'CS-' + (h >>> 0).toString(36).toUpperCase().padStart(6, '0').slice(0, 6); }
+function renderPass(el, d) {
+  const logo = document.querySelector('.brand img').src;
+  el.innerHTML = '<div class="pass" data-state="' + d.state + '"><div class="pass-sheen"></div><div class="pass-top"><div class="pass-brand"><img alt="" src="' + logo + '"><b>Our Class Room</b></div><span class="pass-pill"></span></div><div class="pass-chip"></div><div class="pass-name"></div><div class="pass-mat"></div><div class="pass-grid"><div><small>Department</small><b class="p-dept"></b></div><div><small>Class</small><b class="p-course"></b></div></div><div class="pass-foot"><span class="p-time"></span><span class="p-ref"></span></div></div>';
+  const q = x => el.querySelector(x), card = q('.pass');
+  q('.pass-pill').textContent = { preview: 'Preview', verified: 'Verified', pending: 'Awaiting approval' }[d.state];
+  q('.pass-name').textContent = d.name; q('.pass-mat').textContent = d.matric; q('.p-dept').textContent = d.dept;
+  q('.p-course').textContent = d.course + (d.title ? ' · ' + d.title : '');
+  q('.p-time').textContent = d.at ? new Date(d.at).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Not yet recorded';
+  q('.p-ref').textContent = d.ref || '';
+  card.addEventListener('pointermove', e => { const r = card.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    card.style.setProperty('--rx', (-y * 8).toFixed(2) + 'deg'); card.style.setProperty('--ry', (x * 10).toFixed(2) + 'deg'); card.style.setProperty('--mx', ((x + .5) * 100).toFixed(0) + '%'); card.style.setProperty('--my', ((y + .5) * 100).toFixed(0) + '%'); });
+  card.addEventListener('pointerleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+}
+function showReview(fast) {
+  $('rvSub').textContent = fast ? 'Welcome back, ' + details.name.split(' ')[0] + '. Your last details are filled in. Confirm to continue.' : 'Check these are correct before the camera check. Your attendance is recorded against them.';
+  renderPass($('rvPass'), { state: 'preview', name: details.name, matric: details.matric, dept: dd.text(), course: sess.course_code, title: sess.course_title });
+  $('step2').classList.add('hide'); $('stepReview').classList.remove('hide'); setStep(3);
+}
+$('submit').onclick = () => {
+  smartName();
+  const name = $('name').value.trim().replace(/\s+/g, ' '), matric = $('matric').value.trim().toUpperCase().replace(/\s+/g, ' '), dept = dd.get();
+  const eName = !/^[\p{L}][\p{L}\p{M}'’.\- ]{2,}$/u.test(name) ? 'Enter your full name as it appears on the register.' : '';
+  const eDept = dept ? '' : 'Select your department.';
+  const eMatric = !/^[A-Z0-9][A-Z0-9\/\-._ ]{3,29}$/.test(matric) ? 'Enter a valid matric / registration number.' : '';
+  setErr('name', eName); setErr('dept', eDept); setErr('matric', eMatric);
+  if (eName) return $('name').focus(); if (eDept) return; if (eMatric) return $('matric').focus();
+  $('name').value = name; $('matric').value = matric;
+  details = { name, matric, dept }; showReview(false);
+};
+$('editDetails').onclick = () => { $('stepReview').classList.add('hide'); $('step2').classList.remove('hide'); setStep(2); };
+$('confirm').onclick = () => { if (!navigator.onLine) return toast('You’re offline. Reconnect, then continue.'); $('stepReview').classList.add('hide'); $('step3').classList.remove('hide'); setStep(4); verify(); };
+let sending = false;
+async function send(method) {
+  if (sending) return; sending = true;
+  const { error } = await sb.rpc('submit_attendance', { p_code: code, p_name: details.name, p_matric: details.matric, p_dept: details.dept, p_method: method });
+  sending = false; stopCam();
+  if (error) { toast(error.message); $('step3').classList.add('hide'); $('stepReview').classList.remove('hide'); setStep(3); return; }
+  const pending = method === 'host_review';
+  if ($('remember').checked) LS.set(K_PROFILE, { name: details.name, matric: details.matric, dept: details.dept }); else LS.del(K_PROFILE);
+  LS.set(K_HIST, [{ code, course: info, at: Date.now(), pending }, ...LS.get(K_HIST, [])].slice(0, 20));
+  if (window.ocrLink) ocrLink(code, details.matric);
+  const at = Date.now();
+  lastPass = { state: pending ? 'pending' : 'verified', name: details.name, matric: details.matric, dept: dd.text(), course: sess.course_code, title: sess.course_title, at, ref: mkRef(code + details.matric + at) };
+  renderPass($('donePass'), lastPass);
+  const wk = LS.get(K_HIST, []).filter(x => at - x.at < 7 * 864e5 && !x.pending).length;
+  $('streak').textContent = !pending && wk > 1 ? wk + ' classes checked in on this device this week. Nice consistency.' : '';
+  $('doneTitle').textContent = pending ? 'Request sent' : 'Attendance recorded';
+  $('doneSub').textContent = pending ? 'Your host will review and approve your attendance.' : 'You’re all set. You can close this page.';
+  $('tick').classList.toggle('wait', pending);
+  $('step3').classList.add('hide'); $('done').classList.remove('hide'); setStep(5);
+}
+function fail(msg) { stopCam(); setI(msg); $('retry').style.display = 'block'; }
+$('retry').onclick = verify;
+$('alt').onclick = () => { stopCam(); send('host_review'); };
+
+async function verify() {
+  $('retry').style.display = 'none'; setPct(0); $('sub').textContent = ''; setI('Starting camera…');
+  if (!navigator.mediaDevices?.getUserMedia) return fail('Camera needs a secure (HTTPS) page. Open this site over https:// or use host approval.');
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 }, audio: false });
+    $('vid').srcObject = stream; await $('vid').play(); await new Promise(r => setTimeout(r, 300));
+    if (!landmarker) {
+      setI('Loading face detection…');
+      const m = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
+      landmarker = await m.FaceLandmarker.createFromOptions(await m.FilesetResolver.forVisionTasks(WASM), { baseOptions: { modelAssetPath: MODEL }, runningMode: 'VIDEO', numFaces: 1 });
+    }
+  } catch (e) { return fail(e.name === 'NotAllowedError' ? (window.top !== window ? 'This preview blocks the camera. Open the page from its own web address, or request host approval.' : 'Camera blocked. Tap the lock icon in the address bar, set Camera to Allow, then try again.') : 'Camera or face detection unavailable (HTTPS and internet needed).'); }
+  const T = { left: 'Turn your head left', right: 'Turn your head right', up: 'Look up', down: 'Look down' };
+  const steps = [{ k: 'center', t: 'Look straight at the camera' }, ...['left', 'right', 'up', 'down'].sort(() => Math.random() - .5).map(k => ({ k, t: T[k] }))];
+  let i = 0, hold = 0, t0 = performance.now(), base = { yaw: .5, pitch: .55 }, acc = [];
+  running = true; setI(steps[0].t);
+  let dark = false, lastLum = 0; const lc = document.createElement('canvas'); lc.width = 32; lc.height = 24; const lx = lc.getContext('2d', { willReadFrequently: true });
+  const loop = () => {
+    if (!running) return;
+    const nowT = performance.now();
+    if (nowT - lastLum > 700) { lastLum = nowT; try { lx.drawImage($('vid'), 0, 0, 32, 24); const px = lx.getImageData(0, 0, 32, 24).data; let sum = 0; for (let k = 0; k < px.length; k += 4) sum += px[k] * .299 + px[k + 1] * .587 + px[k + 2] * .114; dark = sum / (px.length / 4) < 55; } catch {} }
+    let l;
+    try { l = landmarker.detectForVideo($('vid'), performance.now()).faceLandmarks?.[0]; }
+    catch (e) { return fail('Face detection error. Please try again.'); }
+    if (!l) { hold = 0; $('sub').textContent = dark ? 'Too dark. Face a light or move somewhere brighter.' : 'No face detected'; }
+    else if (l[454].x - l[234].x < .15) { hold = 0; $('sub').textContent = 'Move closer'; }
+    else {
+      $('sub').textContent = ''; const p = pose(l), k = steps[i].k; let ok = false;
+      if (k === 'center') { ok = Math.abs(p.yaw - .5) < .12; if (ok) acc.push(p); }
+      else if (k === 'left') ok = p.yaw - base.yaw > .12;
+      else if (k === 'right') ok = base.yaw - p.yaw > .12;
+      else if (k === 'up') ok = base.pitch - p.pitch > .07;
+      else ok = p.pitch - base.pitch > .07;
+      hold = ok ? hold + 1 : 0;
+      if (hold >= (k === 'center' ? 15 : 5)) {
+        if (k === 'center') base = { yaw: acc.reduce((a, b) => a + b.yaw, 0) / acc.length, pitch: acc.reduce((a, b) => a + b.pitch, 0) / acc.length };
+        i++; hold = 0; navigator.vibrate?.(25); t0 = performance.now(); setPct(i / steps.length * 100);
+        if (i === steps.length) { running = false; setI('Verified ✓ Submitting…'); return send('liveness'); }
+        setI(steps[i].t);
+      }
+    }
+    if (performance.now() - t0 > 20000) return fail('Verification timed out.');
+    requestAnimationFrame(loop);
+  };
+  loop();
+}
+
+// ---- mark another class ----
+$('another').onclick = () => {
+  $('done').classList.add('hide'); $('step1').classList.remove('hide'); $('code').value = ''; setPct(0); setStep(1); renderRecent();
+  try { history.replaceState(null, '', location.pathname); } catch {} $('code').focus();
+};
+
+// ---- save / share pass as image ----
+function rr(x, px, py, w, h, r) { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); }
+async function savePass() {
+  const d = lastPass; if (!d) return;
+  const W = 1000, H = 620, c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0f2f4a'); g.addColorStop(.55, '#0b2236'); g.addColorStop(1, '#143a5c');
+  x.fillStyle = g; rr(x, 0, 0, W, H, 40); x.fill(); x.save(); rr(x, 0, 0, W, H, 40); x.clip();
+  const g2 = x.createRadialGradient(W, 0, 0, W, 0, 620); g2.addColorStop(0, 'rgba(92,200,255,.34)'); g2.addColorStop(1, 'rgba(92,200,255,0)'); x.fillStyle = g2; x.fillRect(0, 0, W, H);
+  const g3 = x.createRadialGradient(0, H, 0, 0, H, 520); g3.addColorStop(0, 'rgba(201,162,74,.2)'); g3.addColorStop(1, 'rgba(201,162,74,0)'); x.fillStyle = g3; x.fillRect(0, 0, W, H); x.restore();
+  try { const img = new Image(); img.src = document.querySelector('.brand img').src; await img.decode();
+    const t = document.createElement('canvas'); t.width = t.height = 64; const tx = t.getContext('2d'); tx.drawImage(img, 0, 0, 64, 64); tx.globalCompositeOperation = 'source-in'; tx.fillStyle = '#fff'; tx.fillRect(0, 0, 64, 64); x.drawImage(t, 60, 56, 52, 52); } catch {}
+  const F = '"Manrope","Inter",system-ui,sans-serif', fit = (txt, max, size, wt) => { let z = size; x.font = wt + ' ' + z + 'px ' + F; while (x.measureText(txt).width > max && z > 18) { z -= 2; x.font = wt + ' ' + z + 'px ' + F; } };
+  x.fillStyle = '#fff'; x.textBaseline = 'middle'; x.font = '800 34px ' + F; x.fillText('Our Class Room', 124, 83);
+  const pill = { verified: ['VERIFIED', '#8ff0c5'], pending: ['AWAITING APPROVAL', '#ffd48a'] }[d.state]; x.font = '700 22px ' + F; const pw = x.measureText(pill[0]).width + 44;
+  x.strokeStyle = pill[1]; x.lineWidth = 2; rr(x, W - 60 - pw, 62, pw, 44, 22); x.stroke(); x.fillStyle = pill[1]; x.textAlign = 'center'; x.fillText(pill[0], W - 60 - pw / 2, 85); x.textAlign = 'left';
+  const cg = x.createLinearGradient(60, 160, 128, 212); cg.addColorStop(0, '#f5e0a3'); cg.addColorStop(.55, '#c9a24a'); cg.addColorStop(1, '#f0d48a'); x.fillStyle = cg; rr(x, 60, 160, 78, 58, 12); x.fill();
+  x.fillStyle = '#fff'; fit(d.name, W - 120, 62, 800); x.fillText(d.name, 60, 290);
+  x.fillStyle = '#bcd9ee'; x.font = '500 32px "JetBrains Mono",ui-monospace,monospace'; x.fillText(d.matric, 60, 345);
+  const col = (lbl, val, px) => { x.fillStyle = '#7fa0b8'; x.font = '700 20px ' + F; x.fillText(lbl.toUpperCase(), px, 420); x.fillStyle = '#fff'; fit(val, 400, 30, 600); x.fillText(val, px, 462); };
+  col('Department', d.dept, 60); col('Class', d.course + (d.title ? ' · ' + d.title : ''), 520);
+  x.strokeStyle = 'rgba(255,255,255,.2)'; x.setLineDash([8, 8]); x.beginPath(); x.moveTo(60, 520); x.lineTo(W - 60, 520); x.stroke(); x.setLineDash([]);
+  x.fillStyle = '#8fb0c6'; x.font = '500 24px ' + F; x.fillText(new Date(d.at).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }), 60, 568);
+  x.textAlign = 'right'; x.font = '500 24px "JetBrains Mono",ui-monospace,monospace'; x.fillText(d.ref, W - 60, 568); x.textAlign = 'left';
+  c.toBlob(async blob => {
+    if (!blob) return toast('Could not create the image.');
+    const file = new File([blob], 'ourclassroom-attendance-pass.png', { type: 'image/png' });
+    if (navigator.canShare?.({ files: [file] })) { try { await navigator.share({ files: [file], title: 'Attendance pass' }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, 'image/png');
+}
+$('savePass').onclick = savePass;
+
+// ---- QR code scanner v2: native BarcodeDetector with jsQR fallback, torch, zoom, camera flip, photo upload ----
+let scStream, scRun = false, scFacing = 'environment', scDet = null, scCanvas, scCtx, jsqrP, scBad = '';
+function parseCode(raw) { let c = String(raw).trim(); try { c = new URL(c).searchParams.get('code') || ''; } catch {} c = c.toUpperCase(); return /^[A-Z0-9]{4,8}$/.test(c) ? c : ''; }
+const JSQR_SRC = ['https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js', 'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js', 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
+const loadJsQR = () => window.jsQR ? Promise.resolve() : (jsqrP = jsqrP || (async () => { for (const src of JSQR_SRC) { try { await new Promise((ok, no) => { const el = document.createElement('script'); el.src = src; el.onload = ok; el.onerror = no; document.head.appendChild(el); }); if (window.jsQR) return; } catch { } } jsqrP = null; throw new Error('jsqr'); })());
+async function initDecoder() {
+  if (scDet || window.jsQR) return true;
+  if ('BarcodeDetector' in window) { try { if ((await BarcodeDetector.getSupportedFormats()).includes('qr_code')) { scDet = new BarcodeDetector({ formats: ['qr_code'] }); } } catch { } }
+  try { await loadJsQR(); } catch { }
+  return !!(scDet || window.jsQR);
+}
+setTimeout(() => { try { loadJsQR().catch(() => { }); } catch { } }, 2500);
+async function decodeFrame(src, w, h, maxSide = 720) {
+  if (scDet) { try { const r = await scDet.detect(src); if (r[0]) return r[0].rawValue; } catch { } }
+  if (window.jsQR) {
+    const k = Math.min(1, maxSide / Math.max(w, h)), cw = Math.max(1, Math.round(w * k)), ch = Math.max(1, Math.round(h * k));
+    scCanvas = scCanvas || document.createElement('canvas'); if (scCanvas.width !== cw || scCanvas.height !== ch) { scCanvas.width = cw; scCanvas.height = ch; scCtx = null; }
+    scCtx = scCtx || scCanvas.getContext('2d', { willReadFrequently: true }); scCtx.drawImage(src, 0, 0, cw, ch);
+    const im = scCtx.getImageData(0, 0, cw, ch), r = window.jsQR(im.data, cw, ch, { inversionAttempts: 'attemptBoth' }); return r ? r.data : '';
+  }
+  return '';
+}
+function stopScan() { scRun = false; scStream?.getTracks().forEach(t => t.stop()); scStream = null; $('scanner').classList.add('hide'); $('scTorch').setAttribute('aria-pressed', 'false'); }
+function gotCode(raw) {
+  const c = parseCode(raw);
+  if (!c) { if (raw !== scBad) { scBad = raw; $('scMsg').textContent = 'That QR code isn’t a Our Class Room attendance code. Try another.'; } return false; }
+  $('scCam').classList.add('hit'); navigator.vibrate?.(40);
+  setTimeout(() => { stopScan(); $('scCam').classList.remove('hit'); $('code').value = c; check(); }, 220); scRun = false; return true;
+}
+async function getStream() {
+  const tries = [{ video: { facingMode: { ideal: scFacing }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }, { video: { facingMode: scFacing }, audio: false }, { video: true, audio: false }];
+  let err; for (const c of tries) { try { return await navigator.mediaDevices.getUserMedia(c); } catch (e) { err = e; if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError' || e.name === 'NotReadableError')) break; } }
+  throw err;
+}
+async function openStream() {
+  scStream?.getTracks().forEach(t => t.stop());
+  scStream = await getStream();
+  const v = $('scVid'); v.muted = true; v.setAttribute('playsinline', ''); v.srcObject = scStream; try { await v.play(); } catch { await new Promise(r => setTimeout(r, 300)); try { await v.play(); } catch { } }
+  const tr = scStream.getVideoTracks()[0], caps = tr.getCapabilities ? tr.getCapabilities() : {};
+  try { if (caps.focusMode?.includes('continuous')) await tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch {}
+  $('scTorch').classList.toggle('hide', !caps.torch); $('scTorch').setAttribute('aria-pressed', 'false');
+  const z = $('scZoom'); if (caps.zoom && caps.zoom.max > caps.zoom.min) { z.min = caps.zoom.min; z.max = Math.min(caps.zoom.max, caps.zoom.min + 4); z.step = caps.zoom.step || .1; z.value = caps.zoom.min; z.classList.remove('hide'); } else z.classList.add('hide');
+  try { const cams = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput'); $('scFlip').classList.toggle('hide', cams.length < 2); } catch {}
+}
+function scanLoop() {
+  let last = 0, busy = false;
+  const tick = async t => {
+    if (!scRun) return;
+    const v = $('scVid');
+    if (!busy && t - last > 110 && v.readyState >= 2 && v.videoWidth) {
+      busy = true; last = t;
+      try { const raw = await decodeFrame(v, v.videoWidth, v.videoHeight); if (raw && gotCode(raw)) return; } catch {}
+      busy = false;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+const inApp = /FBAN|FBAV|Instagram|WhatsApp|Line\/|Snapchat|MicroMessenger|TikTok|; wv\)|GSA\//i.test(navigator.userAgent);
+function camMsg(e) {
+  if (!window.isSecureContext) return 'The camera needs a secure (https) page. Use “Take photo” below, or type the code.';
+  if (inApp) return 'This in-app browser blocks the camera. Open this page in Chrome, Safari or Samsung Internet, or use “Take photo” below.';
+  const n = e && e.name;
+  if (n === 'NotAllowedError' || n === 'SecurityError') return 'Camera permission is blocked. Allow the camera for this site in your browser settings, or use “Take photo” below.';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'No usable camera was found. Use “Take photo” below, or type the code.';
+  if (n === 'NotReadableError' || n === 'AbortError') return 'The camera is being used by another app. Close it and try again, or use “Take photo” below.';
+  return 'The camera could not start. Use “Take photo” below, or type the code.';
+}
+async function startScan() {
+  scBad = ''; $('scanner').classList.remove('hide'); $('scMsg').textContent = 'Starting camera…';
+  if (!navigator.mediaDevices?.getUserMedia) { $('scMsg').textContent = camMsg(); return; }
+  const dec = initDecoder();
+  try { await openStream(); } catch (e) { $('scMsg').textContent = camMsg(e); return; }
+  const ok = await dec;
+  if (!ok) { $('scMsg').textContent = 'The scanner could not load. Check your connection, or use “Take photo”, or type the code.'; return; }
+  $('scMsg').textContent = 'Point your camera at the QR code shown by your lecturer.'; scRun = true; scanLoop();
+}
+$('scan').onclick = startScan; $('scClose').onclick = stopScan;
+$('scFlip').onclick = async () => { scFacing = scFacing === 'environment' ? 'user' : 'environment'; $('scVid').style.transform = scFacing === 'user' ? 'scaleX(-1)' : 'none'; try { await openStream(); } catch { $('scMsg').textContent = 'Could not switch camera.'; } };
+$('scTorch').onclick = async () => { const on = $('scTorch').getAttribute('aria-pressed') !== 'true'; try { await scStream.getVideoTracks()[0].applyConstraints({ advanced: [{ torch: on }] }); $('scTorch').setAttribute('aria-pressed', on); } catch { toast('Flash isn’t available on this camera.'); } };
+$('scZoom').oninput = () => scStream?.getVideoTracks()[0].applyConstraints({ advanced: [{ zoom: +$('scZoom').value }] }).catch(() => {});
+$('scPhoto').onclick = () => $('scFile').click(); $('scCap').onclick = () => $('scFile2').click();
+async function loadBitmap(f) {
+  if (window.createImageBitmap) { try { return await createImageBitmap(f); } catch { } }
+  return await new Promise((ok, no) => { const u = URL.createObjectURL(f), i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; });
+}
+async function readPhoto(inp) {
+  const f = inp.files[0]; inp.value = ''; if (!f) return;
+  $('scMsg').textContent = 'Reading image…';
+  if (!(await initDecoder())) { $('scMsg').textContent = 'Could not load the scanner. Check your connection or type the code.'; return; }
+  try {
+    const bmp = await loadBitmap(f), w = bmp.width || bmp.naturalWidth, h = bmp.height || bmp.naturalHeight; let raw = '';
+    for (const m of [1600, 900, 500, 2400]) { raw = await decodeFrame(bmp, w, h, m); if (raw) break; }
+    bmp.close?.();
+    if (!raw) { $('scMsg').textContent = 'No QR code found. Move closer, hold steady, fill the frame with the code, then try again.'; return; } gotCode(raw);
+  } catch { $('scMsg').textContent = 'Could not read that image.'; }
+}
+$('scFile').onchange = () => readPhoto($('scFile')); $('scFile2').onchange = () => readPhoto($('scFile2'));
+addEventListener('keydown', e => e.key === 'Escape' && !$('scanner').classList.contains('hide') && stopScan());
+document.addEventListener('visibilitychange', () => { if (document.hidden && scRun) stopScan(); });
+$('scan').classList.remove('hide');
+</script><script>
+// Our Class Room: PWA install, offline notice, update handling
+(function () {
+  'use strict';
+  const ua = navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /android/i.test(ua);
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const K = 'ourclassroom.install';
+  const st = () => { try { return JSON.parse(localStorage.getItem(K) || '{}'); } catch { return {}; } };
+  const save = o => { try { localStorage.setItem(K, JSON.stringify(Object.assign(st(), o))); } catch {} };
+  let deferred = null;
+
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+
+  // If the icons were uploaded into the main folder instead of icons/, find them there and rebuild the manifest.
+  (async () => { try {
+    const link = document.querySelector('link[rel=manifest]'); if (!link) return;
+    const base = new URL(link.href), m = await (await fetch(base, { cache: 'no-store' })).json(); let changed = false;
+    for (const ic of (m.icons || [])) {
+      const abs = new URL(ic.src, base); let ok = false; try { ok = (await fetch(abs, { cache: 'no-store' })).ok; } catch { }
+      if (ok) { ic.src = abs.href; continue; }
+      const alt = new URL(ic.src.split('/').pop(), base);
+      try { if ((await fetch(alt, { cache: 'no-store' })).ok) { ic.src = alt.href; changed = true; } } catch { }
+    }
+    if (changed) { m.start_url = new URL(m.start_url, base).href; m.scope = new URL(m.scope || './', base).href; m.id = new URL(m.id || m.start_url, base).href; link.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/manifest+json' })); }
+  } catch { } })();
+
+  const css = document.createElement('style');
+  css.textContent = `
+  .ocr-bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99999;max-width:460px;margin:0 auto;background:#011A65;color:#fff;border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:14px/1.45 Inter,system-ui,sans-serif;display:flex;gap:12px;align-items:center}
+  .ocr-bar img{width:44px;height:44px;border-radius:10px;flex:none}
+  .ocr-bar b{display:block;font-size:15px}.ocr-bar span{opacity:.85;font-size:13px}
+  .ocr-bar .acts{display:flex;gap:8px;margin-left:auto;flex:none}
+  .ocr-bar button{border:0;border-radius:10px;padding:9px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
+  .ocr-go{background:#FBB917;color:#011A65}.ocr-x{background:rgba(255,255,255,.14);color:#fff}
+  .ocr-modal{position:fixed;inset:0;z-index:100000;background:rgba(1,26,101,.6);display:flex;align-items:flex-end;justify-content:center;padding:12px}
+  .ocr-sheet{background:#fff;color:#0b2236;border-radius:20px;max-width:460px;width:100%;padding:20px;font:15px/1.5 Inter,system-ui,sans-serif;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .ocr-sheet h3{margin:0 0 4px;font-size:18px}.ocr-sheet ol{padding-left:20px;margin:12px 0}.ocr-sheet li{margin:8px 0}
+  .ocr-sheet button{width:100%;border:0;border-radius:12px;padding:12px;background:#011A65;color:#fff;font:600 15px Inter,system-ui,sans-serif;cursor:pointer}
+  .ocr-off{position:fixed;top:0;left:0;right:0;z-index:99998;background:#FBB917;color:#011A65;text-align:center;font:600 13px Inter,system-ui,sans-serif;padding:calc(6px + env(safe-area-inset-top)) 10px 6px}
+  .ocr-link{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;padding:0}`;
+  document.head.appendChild(css);
+
+  function bar(title, sub, goLabel, onGo) {
+    if (document.querySelector('.ocr-bar')) return;
+    const d = document.createElement('div'); d.className = 'ocr-bar'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Install Our Class Room');
+    d.innerHTML = '<img alt="" src="data:image/png;base64,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"><div><b></b><span></span></div><div class="acts"><button class="ocr-x" type="button">Not now</button><button class="ocr-go" type="button"></button></div>';
+    d.querySelector('b').textContent = title; d.querySelector('span').textContent = sub; d.querySelector('.ocr-go').textContent = goLabel;
+    d.querySelector('.ocr-x').onclick = () => { save({ dismissed: Date.now() }); d.remove(); };
+    d.querySelector('.ocr-go').onclick = () => { d.remove(); onGo(); };
+    document.body.appendChild(d);
+  }
+  function iosGuide() {
+    const m = document.createElement('div'); m.className = 'ocr-modal';
+    const safari = /safari/i.test(ua) && !/crios|fxios|edgios|chrome/i.test(ua);
+    m.innerHTML = '<div class="ocr-sheet" role="dialog" aria-modal="true"><h3>Install Our Class Room on iPhone</h3>' +
+      (safari ? '' : '<p style="color:#b4531f;margin:6px 0">Open this page in <b>Safari</b> to install. Other iPhone browsers cannot add apps to the Home Screen.</p>') +
+      '<ol><li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari.</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. Open <b>Our Classroom</b> from your Home Screen.</li></ol>' +
+      '<p style="font-size:13px;color:#5f7689;margin:0 0 12px">Notifications on iPhone need iOS 16.4 or later and work only after the app is added to the Home Screen.</p><button type="button">Got it</button></div>';
+    m.onclick = e => { if (e.target === m || e.target.tagName === 'BUTTON') { save({ iosSeen: Date.now() }); m.remove(); } };
+    document.body.appendChild(m);
+  }
+  async function androidInstall() {
+    if (!deferred) return;
+    deferred.prompt(); const r = await deferred.userChoice.catch(() => ({})); deferred = null;
+    if (r.outcome === 'accepted') save({ installed: true });
+  }
+  async function diagnose() {
+    const out = [];
+    if (!window.isSecureContext) out.push('This page is not served over HTTPS.');
+    if (!('serviceWorker' in navigator)) out.push('This browser cannot install web apps.');
+    else { try { if (!(await navigator.serviceWorker.getRegistration())) out.push('sw.js is not running. Upload sw.js next to index.html, then reload the page.'); } catch { } }
+    const link = document.querySelector('link[rel=manifest]');
+    let m = null;
+    try { const r = await fetch(link.href, { cache: 'no-store' }); if (!r.ok) throw 0; m = await r.json(); } catch { out.push('manifest.webmanifest could not be loaded. Upload it next to index.html.'); }
+    if (m) {
+      for (const ic of (m.icons || [])) { try { const r = await fetch(new URL(ic.src, link.href), { cache: 'no-store' }); if (!r.ok) throw 0; } catch { out.push('Not found: ' + new URL(ic.src, link.href).href + ' . Open that address in your browser. If it shows an error, the file is not at that path.'); } }
+      if (!(m.icons || []).some(i => /192/.test(i.sizes)) || !(m.icons || []).some(i => /512/.test(i.sizes))) out.push('The manifest needs 192 and 512 pixel icons.');
+    }
+    return out;
+  }
+  function manualGuide() {
+    const mo = document.createElement('div'); mo.className = 'ocr-modal';
+    mo.innerHTML = '<div class="ocr-sheet" role="dialog" aria-modal="true"><h3>Install Our Class Room</h3><p style="margin:4px 0 0;color:#5f7689">Your browser has not offered the one-tap install yet. Add it from the browser menu:</p>' +
+      '<ol><li><b>Samsung Internet:</b> tap the menu (≡), then <b>Add page to</b>, then <b>Home screen</b> (or <b>Install app</b> if shown).</li><li><b>Chrome:</b> tap ⋮, then <b>Install app</b> or <b>Add to Home screen</b>.</li></ol>' +
+      '<div id="ocrDiag" style="font-size:13px;margin:0 0 12px;color:#5f7689">Checking this site…</div><button type="button">Got it</button></div>';
+    mo.onclick = e => { if (e.target === mo || e.target.tagName === 'BUTTON') mo.remove(); };
+    document.body.appendChild(mo);
+    diagnose().then(p => { const d = mo.querySelector('#ocrDiag'); if (!d) return; d.innerHTML = p.length ? '<b style="color:#b4531f">Why one-tap install is unavailable:</b><ul style="margin:6px 0 0;padding-left:18px">' + p.map(x => '<li></li>').join('') + '</ul>' : 'This site meets install requirements. If the menu still has no install option, reload the page once and try again.'; if (p.length) d.querySelectorAll('li').forEach((li, i) => li.textContent = p[i]); });
+  }
+  window.ocrInstall = () => isIOS ? iosGuide() : (deferred ? androidInstall() : manualGuide());
+  window.ocrIsInstalled = () => standalone() || !!st().installed;
+
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferred = e;
+    if (standalone()) return;
+    const s = st(); document.querySelectorAll('[data-ocr-install]').forEach(b => b.hidden = false);
+    if (!s.installed && (!s.dismissed || Date.now() - s.dismissed > 7 * 864e5)) bar('Install Our Class Room', 'Add it to your home screen for quick access.', 'Install', androidInstall);
+  });
+  addEventListener('appinstalled', () => { save({ installed: true }); document.querySelector('.ocr-bar')?.remove(); document.querySelectorAll('[data-ocr-install]').forEach(b => b.hidden = true); });
+
+  addEventListener('DOMContentLoaded', () => {
+    if (standalone()) { save({ installed: true }); document.documentElement.classList.add('ocr-standalone'); return; }
+    const s = st();
+    if (isIOS) {
+      document.querySelectorAll('[data-ocr-install]').forEach(b => { b.hidden = false; });
+      if (!s.iosSeen && !s.dismissed) setTimeout(() => bar('Install Our Class Room', 'Add it to your iPhone Home Screen.', 'How', iosGuide), 2500);
+    } else if (isAndroid) {
+      document.querySelectorAll('[data-ocr-install]').forEach(b => { b.hidden = !deferred; });
+    }
+    document.querySelectorAll('[data-ocr-install]').forEach(b => b.addEventListener('click', () => window.ocrInstall()));
+  });
+
+  // Offline notice. Attendance can never be verified offline: submissions need the server.
+  let off;
+  const net = () => {
+    if (!navigator.onLine && !off) { off = document.createElement('div'); off.className = 'ocr-off'; off.setAttribute('role', 'status'); off.textContent = 'You’re offline. Attendance can’t be submitted or verified until you reconnect.'; document.body.appendChild(off); }
+    if (navigator.onLine && off) { off.remove(); off = null; }
+  };
+  addEventListener('online', net); addEventListener('offline', net); addEventListener('DOMContentLoaded', net);
+})();
+
+</script>
+<script>
+// ===== Our Class Room: student features (history, timetable, reminders, verification) =====
+(function () {
+  'use strict';
+  const K_DEV = 'ourclassroom.device', K_TT = 'ourclassroom.cache.timetable', K_HI = 'ourclassroom.cache.history', K_FIRED = 'ourclassroom.fired';
+  const oe = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const pad = n => String(n).padStart(2, '0');
+  const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const hm = t => t.split(':').map(Number);
+  const tm = d => new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dt = d => new Date(d).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const tok = () => { let t = LS.get(K_DEV, null); if (!t) { const b = new Uint8Array(32); crypto.getRandomValues(b); t = [...b].map(x => x.toString(16).padStart(2, '0')).join(''); LS.set(K_DEV, t); } return t; };
+  const hasTok = () => !!LS.get(K_DEV, null);
+  const call = async (fn, args) => { const { data, error } = await sb.rpc(fn, args); if (error) throw error; return data; };
+  const getPos = () => new Promise(r => { if (!navigator.geolocation) return r(null); navigator.geolocation.getCurrentPosition(p => r({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }), () => r(null), { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }); });
+
+  async function notify(title, body, tag) {
+    toast(title + ': ' + body);
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      const o = { body, tag, icon: 'icons/icon-192.png', badge: 'icons/icon-96.png', vibrate: [200, 100, 200] };
+      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      reg ? reg.showNotification(title, o) : new Notification(title, o);
+    } catch { }
+  }
+
+  // ---- After a normal check-in: link this device and record where the student is ----
+  window.ocrLink = async function (code, matric) {
+    try {
+      const p = await getPos();
+      const r = await call('ocr_attach_checkin', { p_code: code, p_matric: matric, p_device: tok(), p_lat: p?.lat ?? null, p_lng: p?.lng ?? null, p_acc: p?.acc ?? null });
+      if (r?.linked) {
+        const sub = $('doneSub');
+        if (r.class === 'late') sub.textContent = `Recorded as late (${r.late_minutes} min after the lecture started).`;
+        if (r.geo === 'outside') toast('You seem to be outside the lecture venue. Your lecturer may review this.');
+        if (r.geo === 'unavailable') toast('Location was unavailable. Your attendance is still recorded.');
+        loadAll(true);
+      } else if (r?.reason === 'device_mismatch') toast('This check-in is linked to another device.');
+    } catch { }
+  };
+
+  // ---- Panel ----
+  let tt = LS.get(K_TT, null), hi = LS.get(K_HI, null), tab = 'tt', ttView = 'day', dayOff = 0, rep = null, stale = '', perVal = 'week', perOpen = false;
+  async function loadAll(quiet) {
+    if (!hasTok() && !quiet) { stale = ''; draw(); return; }
+    if (!hasTok()) return;
+    try {
+      const [a, b] = await Promise.all([call('ocr_my_timetable', { p_device: tok() }), call('ocr_my_history', { p_device: tok() })]);
+      tt = { ...a, at: Date.now() }; LS.set(K_TT, tt);
+      hi = { ...b, records: b.records.map(r => ({ code: r.code, title: r.title, lecturer: r.lecturer, lecture_date: r.lecture_date, status: r.status, class: r.class, late_minutes: r.late_minutes, checkin_at: r.checkin_at, early_departure: r.early_departure, verifications: r.verifications, academic_session: r.academic_session, semester: r.semester })), at: Date.now() };
+      delete hi.semesters_raw; LS.set(K_HI, hi); stale = '';
+    } catch (e) { if (!tt && !hi) stale = e.message; else stale = 'Showing your saved copy' + (tt?.at ? ' from ' + new Date(tt.at).toLocaleString() : '') + '. ' + (navigator.onLine ? e.message : 'You are offline.'); }
+    startRem(); if (!$('ocPanel').classList.contains('hide')) draw();
+  }
+  function occ(s, date) {
+    if (s.day_of_week !== date.getDay()) return null; const k = ymd(date);
+    if ((s.valid_from && k < s.valid_from) || (s.valid_to && k > s.valid_to)) return null;
+    const a = new Date(date), b = new Date(date); a.setHours(...hm(s.start_time), 0); b.setHours(...hm(s.end_time), 0); return { s, a, b };
+  }
+  function nextLecture() {
+    const now = new Date(); let best = null;
+    for (let i = 0; i < 8; i++) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i); (tt?.schedules || []).forEach(s => { const o = occ(s, d); if (o && o.b > now && (!best || o.a < best.a)) best = o; }); }
+    return best;
+  }
+  const card = (o, nx) => { const now = new Date(), live = o.a <= now && now < o.b, isNext = nx && nx.s.id === o.s.id && +nx.a === +o.a;
+    return `<div class="oc-c ${live ? 'live' : isNext ? 'next' : ''}"><div><b>${oe(o.s.code)}</b> ${oe(o.s.title)}${live ? ' <span class="oc-p g">Now</span>' : isNext ? ' <span class="oc-p">Next</span>' : ''}</div><div class="oc-m">${tm(o.a)}–${tm(o.b)} · ${oe(o.s.venue_name || 'Venue to be announced')}${o.s.lecturer ? ' · ' + oe(o.s.lecturer) : ''}</div></div>`; };
+  const hero = nx => { const now = new Date(), live = nx && nx.a <= now, pc = hi?.courses?.length ? Math.round(hi.courses.reduce((a, c) => a + c.percent, 0) / hi.courses.length) : null;
+    return `<div class="hero"><div><small>${nx ? (live ? 'In session now' : 'Next lecture') : 'Nothing scheduled'}</small><b>${nx ? oe(nx.s.code) + ' · ' + oe(nx.s.title) : 'Follow a course to see your lectures'}</b><span>${nx ? (live ? 'Ends ' + tm(nx.b) : dt(nx.a) + ', ' + tm(nx.a)) + ' · ' + oe(nx.s.venue_name || 'Venue to be announced') : 'Search for a course below.'}</span></div>${pc !== null ? `<div class="ring" style="--p:${pc}"><b>${pc}%</b><small>overall</small></div>` : ''}</div>`; };
+  function viewTT() {
+    if (!tt) return hero(null) + '<p class="oc-m">Follow a course below to see its timetable. Courses you check in to are added automatically.</p>' + followBox();
+    const nx = nextLecture(); let h = hero(nx);
+    if (tt.updates?.length) h += '<div class="oc-upd"><b>Timetable updates</b>' + tt.updates.map(u => `<div>${oe(u.message)} <small>${new Date(u.created_at).toLocaleDateString()}</small></div>`).join('') + '</div>';
+    h += '<div class="oc-seg"><button data-v="day" class="' + (ttView === 'day' ? 'on' : '') + '">Daily</button><button data-v="week" class="' + (ttView === 'week' ? 'on' : '') + '">Weekly</button></div>';
+    if (ttView === 'day') {
+      const d = new Date(); d.setDate(d.getDate() + dayOff); d.setHours(0, 0, 0, 0);
+      const list = (tt.schedules || []).map(s => occ(s, d)).filter(Boolean).sort((a, b) => a.a - b.a);
+      h += `<div class="oc-nav"><button data-d="-1">‹</button><b>${dayOff === 0 ? 'Today' : dt(d)}</b><button data-d="1">›</button></div>` + (list.length ? list.map(o => card(o, nx)).join('') : '<p class="oc-m">No lectures this day.</p>');
+    } else {
+      const m = new Date(); m.setHours(0, 0, 0, 0); m.setDate(m.getDate() - ((m.getDay() + 6) % 7));
+      for (let i = 0; i < 7; i++) { const d = new Date(m); d.setDate(m.getDate() + i); const list = (tt.schedules || []).map(s => occ(s, d)).filter(Boolean).sort((a, b) => a.a - b.a); h += `<h4>${DAYS[d.getDay()]}</h4>` + (list.length ? list.map(o => card(o, nx)).join('') : '<p class="oc-m">—</p>'); }
+    }
+    return h + followBox();
+  }
+  const followBox = () => `<h4>My courses</h4><div>${(tt?.courses || []).map(c => `<span class="oc-chip">${oe(c.code)} <button data-un="${oe(c.id)}" aria-label="Unfollow ${oe(c.code)}">×</button></span>`).join('') || '<p class="oc-m">None yet.</p>'}</div>
+    <div class="oc-row"><input id="ocQ" placeholder="Find a course by code or title"><button class="oc-b" id="ocFind">Search</button></div><div id="ocRes"></div>`;
+  const stat = r => r.class === 'late' ? `<span class="oc-p w">Late +${r.late_minutes}m</span>` : r.status === 'pending' ? '<span class="oc-p w">Pending approval</span>' : '<span class="oc-p g">Present</span>';
+  function viewHist() {
+    const ask = '';
+    if (!hi) return ask + '<p class="oc-m">No attendance on this device yet. Records appear after you check in to a class.</p>';
+    return ask + '<h4>Attendance by course</h4>' + (hi.courses || []).map(c => `<div class="oc-c"><div><b>${oe(c.code)}</b> ${oe(c.title)} ${c.percent < 75 ? '<span class="oc-p w">Below 75%</span>' : ''}</div><div class="oc-m">${oe(c.lecturer || '')}</div><div class="oc-bar"><i style="width:${Math.min(100, c.percent)}%"></i></div><div class="oc-m"><b>${c.percent}%</b> · ${c.attended} on time · ${c.late} late · ${c.absent} absent · ${c.held} held</div></div>`).join('')
+      + '<h4>Check-ins</h4>' + ((hi.records || []).map(r => `<div class="oc-c"><div><b>${oe(r.code)}</b> ${oe(r.title)} ${stat(r)}</div><div class="oc-m">${oe(r.lecturer || '')} · ${dt(r.lecture_date)} · checked in ${tm(r.checkin_at)}</div>${(r.verifications || []).filter(v => v.result !== 'verified').length || r.early_departure ? '<div class="oc-m warn">Some verifications need lecturer review.</div>' : ''}</div>`).join('') || '<p class="oc-m">No check-ins.</p>');
+  }
+  function range(k) {
+    const n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()), wk = new Date(d0); wk.setDate(wk.getDate() - ((d0.getDay() + 6) % 7));
+    if (k === 'week') { const b = new Date(wk); b.setDate(b.getDate() + 7); return [wk, b, 'This week']; }
+    if (k === 'lastweek') { const a = new Date(wk); a.setDate(a.getDate() - 7); return [a, wk, 'Last week']; }
+    if (k === 'month') return [new Date(n.getFullYear(), n.getMonth(), 1), new Date(n.getFullYear(), n.getMonth() + 1, 1), 'This month'];
+    return [new Date(n.getFullYear(), n.getMonth() - 1, 1), new Date(n.getFullYear(), n.getMonth(), 1), 'Last month'];
+  }
+  function viewRep() {
+    const sems = [...new Map(((hi?.records) || []).map(r => [r.academic_session + '|' + r.semester, r])).values()];
+    const per = [['week', 'This week'], ['lastweek', 'Last week'], ['month', 'This month'], ['lastmonth', 'Last month'], ...sems.map(x => ['s:' + x.academic_session + '|' + x.semester, x.academic_session + ' ' + x.semester + ' semester'])];
+    const cur = per.find(p => p[0] === perVal) || per[0];
+    let h = `<label class="oc-l">Period</label><div class="oc-dd"><button type="button" class="oc-ddb" id="ocPerBtn" aria-haspopup="listbox" aria-expanded="${perOpen}">${oe(cur[1])}</button>${perOpen ? '<div class="oc-ddl" role="listbox">' + per.map(p => `<button type="button" role="option" class="${p[0] === cur[0] ? 'on' : ''}" data-pv="${oe(p[0])}">${oe(p[1])}</button>`).join('') + '</div>' : ''}</div><button class="oc-b full" id="ocRun">Generate report</button>`;
+    if (rep) h += `<h4>${oe(rep.label)}</h4><div class="oc-tot"><div><b>${rep.r.totals.held}</b>Held</div><div><b>${rep.r.totals.attended}</b>On time</div><div><b>${rep.r.totals.late}</b>Late</div><div><b>${rep.r.totals.absent}</b>Absent</div><div><b>${rep.r.totals.percent}%</b>Attendance</div></div>`
+      + rep.r.courses.map(c => `<div class="oc-c"><b>${oe(c.code)}</b> ${oe(c.title)}<div class="oc-m">${c.held} held · ${c.attended} on time · ${c.late} late · ${c.absent} absent · <b>${c.percent}%</b></div></div>`).join('')
+      + '<div class="oc-row"><button class="oc-b" id="ocPdf">Print / PDF</button><button class="oc-b" id="ocXls">Excel</button></div>';
+    return h;
+  }
+
+  // ---- Class Room AI chat (coins + images) ----
+  let chat = [], aiImg = null, aiDraft = '', aiBusy = false, aiCoin = null, aiOff = 0, aiRef = 0;
+  const cd = s => { s = Math.max(0, s); return Math.floor(s / 3600) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60); };
+  const aiSecs = () => aiCoin?.refresh_at ? Math.round((new Date(aiCoin.refresh_at) - (Date.now() + aiOff)) / 1000) : 0;
+  const aiOut = () => aiCoin && aiCoin.coins <= 0 && aiSecs() > 0;
+  function aiMeta(d) { if (d?.coins == null) return; aiCoin = { coins: d.coins, allowance: d.allowance, refresh_at: d.refresh_at }; if (d.server_now) aiOff = new Date(d.server_now) - Date.now(); }
+  async function aiStatus() {
+    if (!hasTok()) { aiCoin = null; return; }
+    const { data } = await sb.functions.invoke('ai-student', { body: { action: 'status', device: tok() } }); aiMeta(data); if (tab === 'ai' && !$('ocPanel').classList.contains('hide')) draw();
+  }
+  function viewAI() {
+    if (!hasTok()) return '<div class="oc-c"><b>Check in to a class first</b><div class="oc-m">Class Room AI uses your attendance history. Mark attendance once on this device, then come back.</div></div>';
+    const out = aiOut(), pct = aiCoin ? Math.max(0, Math.min(100, aiCoin.coins / aiCoin.allowance * 100)) : 0;
+    return `<div class="aibar"><div><b>${aiCoin ? aiCoin.coins : '–'}</b> <span>of ${aiCoin ? aiCoin.allowance : '–'} coins left</span></div><div class="oc-bar"><i style="width:${pct}%"></i></div>${aiCoin?.refresh_at ? `<div class="oc-m">Refills in <b id="aiCd">${cd(aiSecs())}</b></div>` : '<div class="oc-m">Your coins refill 5 hours after you first use them.</div>'}</div>`
+      + '<div class="ailog">' + (chat.length ? chat.map(m => `<div class="aim ${m.r}">${m.img ? `<img src="${m.img}" alt="Your upload">` : ''}<div class="aib">${oe(m.t)}</div></div>`).join('') : '<p class="oc-m">Ask about your attendance or timetable, or attach a photo of a question, diagram or notes.</p>') + '</div>'
+      + (out ? `<p class="oc-note">You’ve used all your AI coins. They refill in <b id="aiCd">${cd(aiSecs())}</b>.</p>` : '')
+      + (aiImg ? '<div class="aiprev"><img src="' + aiImg + '" alt="Preview"><button class="oc-b sm alt" id="aiRm">Remove</button></div>' : '')
+      + `<div class="oc-row"><button class="oc-b alt" id="aiGal" ${out ? 'disabled' : ''} aria-label="Choose photo">Photo</button><button class="oc-b alt" id="aiCam" ${out ? 'disabled' : ''} aria-label="Take photo">Camera</button><input id="aiQ" maxlength="500" placeholder="Ask a question" value="${oe(aiDraft)}" ${out ? 'disabled' : ''}><button class="oc-b" id="aiSend" ${out || aiBusy ? 'disabled' : ''}>Send</button></div>`
+      + '<input type="file" id="aiFile" accept="image/jpeg,image/png,image/webp" hidden><input type="file" id="aiFile2" accept="image/*" capture="environment" hidden>'
+      + '<p class="oc-m">Each question costs coins (more with a photo). Photos are sent for the answer only and are not saved. This chat is cleared when you close the page.</p>';
+  }
+  async function aiSend() {
+    const q = aiDraft.trim(); if ((!q && !aiImg) || aiBusy || aiOut()) return;
+    const img = aiImg; chat.push({ r: 'user', t: q || 'Please explain this image.', img }); chat.push({ r: 'ai', t: 'Thinking…' }); aiImg = null; aiDraft = ''; aiBusy = true; draw();
+    const { data, error } = await sb.functions.invoke('ai-student', { body: { message: q || 'Please explain this image.', device: tok(), image: img } });
+    let d = data; if (error && !d) { try { d = await error.context.json(); } catch { d = { error: 'AI is unavailable right now. Your coins were not used.' }; } }
+    chat.pop(); aiMeta(d); aiBusy = false;
+    chat.push(d?.reply != null ? { r: 'ai', t: d.reply || 'No answer.' } : { r: 'err', t: d?.error || 'Something went wrong. Your coins were not used.' }); draw();
+  }
+  async function aiPick(f) {
+    if (!f) return; if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return toast('Use a JPEG, PNG or WebP photo.'); if (f.size > 15e6) return toast('That photo is too large (15 MB max).');
+    try {
+      const bm = await createImageBitmap(f), k = Math.min(1, 1280 / Math.max(bm.width, bm.height)), c = document.createElement('canvas'); c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+      aiImg = c.toDataURL('image/jpeg', .82); if (aiImg.length > 4.2e6) { aiImg = null; return toast('That photo is still too large. Try a smaller one.'); } draw();
+    } catch { toast('Could not read that photo.'); }
+  }
+  $('ocBody').addEventListener('input', e => { if (e.target.id === 'aiQ') aiDraft = e.target.value; });
+  $('ocBody').addEventListener('keydown', e => { if (e.target.id === 'aiQ' && e.key === 'Enter') aiSend(); });
+  $('ocBody').addEventListener('change', e => { if (e.target.id === 'aiFile' || e.target.id === 'aiFile2') { const f = e.target.files[0]; e.target.value = ''; aiPick(f); } });
+  $('ocBody').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'aiSend') aiSend(); else if (b.id === 'aiGal') $('aiFile').click(); else if (b.id === 'aiCam') $('aiFile2').click(); else if (b.id === 'aiRm') { aiImg = null; draw(); } });
+  setInterval(() => { const e = $('aiCd'); if (!e || !aiCoin?.refresh_at) return; const s = aiSecs(); e.textContent = cd(s); if (s <= 0 && !aiBusy && !aiRef) { aiRef = 1; aiStatus().finally(() => aiRef = 0); } }, 1000);
+  function viewSet() {
+    const opts = tt?.options || [], pr = tt?.prefs || [], perm = 'Notification' in window ? Notification.permission : 'unsupported';
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent), inst = window.ocrIsInstalled && window.ocrIsInstalled();
+    const pf = LS.get(K_PROFILE, null);
+    return `<h4>Your details</h4>${pf ? `<div class="oc-c"><b>${oe(pf.name)}</b><div class="oc-m">${oe(pf.matric)}</div></div>` : '<p class="oc-m">Tick “Remember my details” when you check in to save them here.</p>'}<h4>Lecture reminders</h4><p class="oc-m">Remind me before a lecture starts:</p><div>${opts.map(m => `<label class="oc-chk"><input type="checkbox" data-m="${m}" ${pr.includes(m) ? 'checked' : ''}> ${m >= 60 ? m / 60 + ' h' : m + ' min'}</label>`).join('') || '<span class="oc-m">Follow a course first.</span>'}</div><button class="oc-b" id="ocSavePr">Save reminders</button>
+      <h4>Notifications</h4><p class="oc-m">${perm === 'granted' ? 'Notifications are on.' : perm === 'denied' ? 'Notifications are blocked in your browser settings.' : perm === 'unsupported' ? 'This browser does not support notifications.' : ios && !inst ? 'On iPhone, add Our Class Room to your Home Screen first (iOS 16.4+), then enable notifications here.' : 'Get reminders and attendance checks as notifications.'}</p>${perm === 'default' && !(ios && !inst) ? '<button class="oc-b" id="ocNotif">Enable notifications</button>' : ''}
+      <p class="oc-m">Reminders and attendance checks arrive while Our Class Room is open or running in the background. Keep it open during lectures.</p>
+      <h4>This device</h4><p class="oc-m">Your history is linked to this device, not an account.</p><button class="oc-b" data-ocr-install ${inst ? 'hidden' : ''} id="ocInst">Install Our Class Room</button><button class="oc-b danger" id="ocForget">Forget this device</button>`;
+  }
+  function draw() {
+    const b = $('ocBody'); 
+    b.innerHTML = (stale ? `<p class="oc-note">${oe(stale)}</p>` : '') + ({ tt: viewTT, hi: viewHist, ai: viewAI, rp: viewRep, st: viewSet }[tab])();
+    const ocInst = $('ocInst'); if (ocInst) ocInst.onclick = () => window.ocrInstall();
+  }
+  const TT = { tt: 'Timetable', hi: 'History', ai: 'Class Room AI', rp: 'Reports', st: 'Settings' };
+  function go(p) {
+    document.querySelectorAll('#ocTabs button').forEach(x => x.classList.toggle('on', x.dataset.p === p));
+    const ck = p === 'ck'; document.querySelector('.shell').classList.toggle('hide', !ck); $('ocPanel').classList.toggle('hide', ck);
+    if (p === 'ai') aiStatus(); if (!ck) { tab = p; $('pgTitle').textContent = TT[p]; draw(); loadAll(); }
+    scrollTo(0, 0);
+  }
+  $('ocTabs').onclick = e => { const b = e.target.closest('button'); if (b) go(b.dataset.p); };
+  $('ocBody').onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    try {
+      if (b.id === 'ocPerBtn') { perOpen = !perOpen; draw(); }
+      else if (b.dataset.pv) { perVal = b.dataset.pv; perOpen = false; draw(); }
+      else if (b.dataset.v) { ttView = b.dataset.v; draw(); }
+      else if (b.dataset.d) { dayOff += +b.dataset.d; draw(); }
+      else if (b.id === 'ocFind') { const q = $('ocQ').value.trim(); if (q.length < 2) return toast('Type at least 2 characters'); const r = await call('ocr_search_courses', { p_q: q }); $('ocRes').innerHTML = r.map(c => `<div class="oc-c"><b>${oe(c.code)}</b> ${oe(c.title)} <button class="oc-b sm" data-f="${oe(c.id)}">Follow</button></div>`).join('') || '<p class="oc-m">No courses found.</p>'; }
+      else if (b.dataset.f) { await call('ocr_follow_course', { p_device: tok(), p_course: b.dataset.f }); toast('Course followed'); await loadAll(); }
+      else if (b.dataset.un) { await call('ocr_unfollow_course', { p_device: tok(), p_course: b.dataset.un }); await loadAll(); }
+      else if (b.id === 'ocRun') {
+        const v = perVal, a = { p_device: tok() }; let label;
+        if (v.startsWith('s:')) { const [x, s] = v.slice(2).split('|'); a.p_acad = x; a.p_sem = s; label = x + ' ' + s + ' semester'; } else { const [f, t, l] = range(v); a.p_from = f.toISOString(); a.p_to = t.toISOString(); label = l + ' (' + f.toLocaleDateString() + ' – ' + new Date(t - 864e5).toLocaleDateString() + ')'; }
+        rep = { label, r: await call('ocr_my_report', a) }; draw();
+      }
+      else if (b.id === 'ocPdf') { const w = window.open('', '_blank'); if (!w) return toast('Allow pop-ups to print'); const p = LS.get(K_PROFILE, {}); w.document.write(`<title>Attendance report</title><body style="font-family:sans-serif;padding:28px"><h2>Our Class Room</h2><h3>Attendance report: ${oe(rep.label)}</h3><p>${oe(p.name || '')} ${oe(p.matric || '')}</p><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><tr><th>Course</th><th>Lecturer</th><th>Held</th><th>Attended</th><th>Late</th><th>Absent</th><th>%</th></tr>${rep.r.courses.map(c => `<tr><td>${oe(c.code)} ${oe(c.title)}</td><td>${oe(c.lecturer || '')}</td><td>${c.held}</td><td>${c.attended}</td><td>${c.late}</td><td>${c.absent}</td><td>${c.percent}%</td></tr>`).join('')}</table><p>Total: ${rep.r.totals.held} held, ${rep.r.totals.attended} on time, ${rep.r.totals.late} late, ${rep.r.totals.absent} absent: ${rep.r.totals.percent}%</p>`); w.document.close(); w.print(); }
+      else if (b.id === 'ocXls') {
+        await new Promise((ok, no) => { if (window.XLSX) return ok(); const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'; s.onload = ok; s.onerror = () => no(new Error('Could not load the Excel library')); document.head.appendChild(s); });
+        const safe = v => typeof v === 'string' && /^[=+\-@]/.test(v) ? "'" + v : v;
+        const rows = [['Course', 'Title', 'Lecturer', 'Lectures held', 'Attended on time', 'Late', 'Absent', 'Attendance %'], ...rep.r.courses.map(c => [c.code, safe(c.title), safe(c.lecturer || ''), c.held, c.attended, c.late, c.absent, c.percent])];
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Attendance'); XLSX.writeFile(wb, 'ourclassroom-attendance-report.xlsx');
+      }
+      else if (b.id === 'ocSavePr') { const m = [...document.querySelectorAll('[data-m]:checked')].map(x => +x.dataset.m); await call('ocr_set_prefs', { p_device: tok(), p_minutes: m }); toast('Reminders saved'); await loadAll(); }
+      else if (b.id === 'ocNotif') { const r = await Notification.requestPermission(); toast(r === 'granted' ? 'Notifications enabled' : 'Notifications not enabled'); draw(); }
+      else if (b.id === 'ocForget') { if (!confirm('This removes the link between this device and your attendance history. Your lecturer’s records are not deleted.')) return; [K_DEV, K_TT, K_HI, K_FIRED].forEach(k => LS.del(k)); tt = hi = rep = null; toast('Device forgotten'); draw(); }
+    } catch (err) { toast(err.message || 'Something went wrong'); }
+  };
+
+  // ---- Reminders (fire while the app is open or running) ----
+  let remT;
+  function startRem() { clearInterval(remT); remT = setInterval(remTick, 30000); remTick(); }
+  function remTick() {
+    if (!tt?.schedules?.length) return; const now = Date.now(), fired = LS.get(K_FIRED, {}); let ch = false;
+    Object.keys(fired).forEach(k => { if (now - fired[k] > 864e5 * 2) { delete fired[k]; ch = true; } });
+    for (let i = 0; i < 2; i++) { const d = new Date(); d.setDate(d.getDate() + i); d.setHours(0, 0, 0, 0);
+      tt.schedules.forEach(s => { const o = occ(s, d); if (!o) return; (tt.prefs || []).forEach(m => { const at = +o.a - m * 60000, key = s.id + '|' + ymd(d) + '|' + m;
+        if (now >= at && now < at + 5 * 60000 && !fired[key]) { fired[key] = now; ch = true; notify(`${s.code} starts in ${m} min`, `${tm(o.a)} · ${s.venue_name || 'venue TBA'}`, key); } }); }); }
+    if (ch) LS.set(K_FIRED, fired);
+  }
+
+  // ---- Mid-lecture / final attendance verification ----
+  let list = [], off = 0, seen = new Set(), ct;
+  async function poll() {
+    if (!hasTok() || !navigator.onLine) return;
+    try {
+      const d = await call('ocr_pending_challenges', { p_device: tok() }); list = Array.isArray(d) ? d : [];
+      if (list.length) off = new Date(list[0].server_now) - Date.now();
+      list.filter(c => c.state === 'open' && !seen.has(c.round_id)).forEach(c => { seen.add(c.round_id); notify('Are you still in class?', `${c.course_code}: confirm your attendance now.`, 'chal-' + c.round_id); navigator.vibrate && navigator.vibrate([200, 100, 200]); });
+      showChal();
+    } catch { }
+  }
+  function showChal(msg) {
+    const o = $('ocChal'), c = list[0]; clearInterval(ct);
+    if (!c && !msg) return o.classList.add('hide');
+    o.classList.remove('hide');
+    const body = $('ocChalBody');
+    if (msg) { body.innerHTML = `<h3>${oe(msg.t)}</h3><p>${oe(msg.p)}</p>` + (msg.retry ? '<button class="oc-b full" id="ocChalGo">Try again</button>' : '') + '<button class="oc-b full alt" id="ocChalX">Close</button>'; }
+    else {
+      const open = c.state === 'open';
+      body.innerHTML = `<h3>${c.kind === 'final' ? 'Final attendance check' : 'Are you still in class?'}</h3><p><b>${oe(c.course_code)}</b> ${oe(c.course_title)}${c.venue_name ? ' · ' + oe(c.venue_name) : ''}</p>` + (open ? '<p class="oc-timer" id="ocT"></p>' : '<p class="oc-m warn">You missed this request. You can still respond now and your lecturer will review it.</p>') + `<p class="oc-m">${c.needs_location ? 'Your location will be compared with the lecture venue.' : ''}</p><button class="oc-b full" id="ocChalGo">I’m in class</button>`;
+      if (open) { const tick = () => { const s = Math.max(0, Math.round((new Date(c.closes_at) - (Date.now() + off)) / 1000)); const e = $('ocT'); if (e) e.textContent = `Respond within ${Math.floor(s / 60)}:${pad(s % 60)}`; }; tick(); ct = setInterval(tick, 1000); }
+    }
+  }
+  $('ocChalBody').onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'ocChalX') { list = []; return showChal(); }
+    if (b.id !== 'ocChalGo' || !list[0]) return;
+    b.disabled = true; b.textContent = 'Checking your location…';
+    try {
+      const p = await getPos(), r = await call('ocr_respond_challenge', { p_round: list[0].round_id, p_device: tok(), p_lat: p?.lat ?? null, p_lng: p?.lng ?? null, p_acc: p?.acc ?? null });
+      const M = { verified: ['Confirmed', 'Thanks, your attendance is verified.'], outside_venue: ['Received', 'You appear to be outside the lecture venue. Your lecturer will review this.'], location_unavailable: ['We could not read your location', 'Turn on location services and try again. You will not be marked absent for this.'], late_response: ['Received late', 'Your lecturer will review your response.'] }[r.result] || ['Received', ''];
+      if (r.result !== 'location_unavailable') list.shift(); showChal({ t: M[0], p: M[1], retry: r.retry });
+    } catch (er) { toast(er.message); b.disabled = false; b.textContent = 'I’m in class'; }
+  };
+  addEventListener('online', () => { loadAll(true); poll(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+  setInterval(poll, 12000); poll(); if (hasTok()) loadAll(true);
+})();
+
+</script>
+</body></html>

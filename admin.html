@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0A1747">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="application-name" content="Our Class Room">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Our Classroom"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Our Class Room: smarter attendance, better accountability.">
+<title>Our Class Room — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet"><style>:root{--navy:#0A1747;--gold:#F2B01E;--tint:#FFF4D2;--bg:#F3F4F9;--card:#fff;--ln:#E2E5F0;--ink:#0B1230;--mut:#66708F;--soft:#EEF0F8;--ok:#14804F;--okbg:#DDF3E8;--err:#C73A3A;--errbg:#FCE4E4;--warn:#8A5A00;--warnbg:#FFF0CC;--b:#8A5F00;--font:'Instrument Sans',system-ui,sans-serif;--disp:'Bricolage Grotesque','Instrument Sans',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+@media(prefers-color-scheme:dark){:root{--bg:#090E22;--card:#121A36;--ln:#242E54;--ink:#EDF0FB;--mut:#9BA6CB;--soft:#1B2449;--okbg:#0F3324;--ok:#5FD6A0;--errbg:#3B1717;--err:#FF8A8A;--warnbg:#3A2E0B;--warn:#F6C65A;--navy:#060B1F;--b:#F2B01E}}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font:14.5px/1.5 var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h3{margin:0 0 4px;font:700 18px/1.3 var(--disp);letter-spacing:-.02em}
+.hide{display:none!important}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:none;margin:0;padding:0}
+#app{display:grid;grid-template-columns:250px minmax(0,1fr);grid-template-rows:auto 1fr auto;height:100vh;overflow:hidden}
+.top{display:contents}
+.brand{grid-area:1/1;display:flex;align-items:center;gap:12px;padding:24px 20px 16px;background:var(--navy);color:#fff}
+.brand img{width:42px;height:42px;object-fit:contain;background:#fff;border-radius:12px;padding:5px;flex:none}
+.brand b{display:block;font:700 17px var(--disp);letter-spacing:-.02em}.brand small{display:block;color:#9FAAD6;font-size:11.5px;line-height:1.3}
+.tabs{grid-area:2/1;display:flex;flex-direction:column;gap:2px;padding:8px 12px;background:var(--navy);overflow:auto}
+.tab{border:0;background:none;text-align:left;padding:11px 14px;border-radius:12px;font:600 14px var(--font);color:#B4BEE6;cursor:pointer;position:relative;transition:background .15s}
+.tab:hover{background:rgba(255,255,255,.07);color:#fff}.tab.on{background:rgba(255,255,255,.11);color:#fff}
+.tab.on:before{content:"";position:absolute;left:-12px;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--gold)}
+.me{grid-area:3/1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px 20px;background:var(--navy);color:#9FAAD6;font-size:12.5px;border-top:1px solid rgba(255,255,255,.08)}
+.me b{color:#fff;font-size:14px}.me .btn.alt{background:rgba(255,255,255,.12);color:#fff;height:34px;padding:0 14px}
+#app>section{grid-column:2;grid-row:1/4;overflow:auto;padding:32px 36px 64px}
+#app>section>*{max-width:1040px}
+.glass{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 1px 2px rgba(10,23,71,.05)}
+.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:18px 20px}
+.stat b{display:block;font:700 34px/1 var(--disp);letter-spacing:-.03em;margin-bottom:8px}.stat span{font-size:13px;color:var(--mut)}
+.bento .stat:first-child{background:var(--navy);border-color:var(--navy)}.bento .stat:first-child b{color:var(--gold)}.bento .stat:first-child span{color:#B4BEE6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font:600 13px var(--font);color:var(--mut);margin:14px 0 6px}
+input,select{width:100%;height:44px;padding:0 14px;border:1px solid var(--ln);border-radius:12px;font:inherit;background:var(--card);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,.dd.open .dd-btn{border-color:var(--gold);box-shadow:0 0 0 4px rgba(242,176,30,.22)}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:0 20px;height:42px;font:700 14px var(--font);color:#0A1747;background:var(--gold);cursor:pointer;transition:filter .15s,transform .1s}
+.btn:hover{filter:brightness(1.07)}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.5;pointer-events:none}
+.btn.alt{background:var(--soft);color:var(--ink)}.btn.red{background:var(--err);color:#fff}
+.btn.sm{height:32px;padding:0 12px;font-size:12.5px;border-radius:9px}.btn.full{width:100%;margin-top:22px;height:48px;font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.dd{position:relative}.dd-btn{width:100%;height:44px;text-align:left;padding:0 14px;border:1px solid var(--ln);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.dd-btn:after{content:"";width:8px;height:8px;border-right:2px solid var(--mut);border-bottom:2px solid var(--mut);transform:rotate(45deg) translateY(-2px)}
+.dd-list{display:none;position:absolute;z-index:30;left:0;right:0;top:100%;margin-top:6px;background:var(--card);border:1px solid var(--ln);border-radius:14px;box-shadow:0 18px 40px -10px rgba(10,23,71,.28);max-height:240px;overflow:auto;padding:6px}
+.dd.open .dd-list{display:block}.dd-item{padding:10px 12px;border-radius:9px;cursor:pointer}.dd-item:hover{background:var(--soft)}
+.code{font:800 clamp(34px,5vw,54px)/1 var(--mono);letter-spacing:.18em;text-align:center;background:var(--navy);color:var(--gold);border-radius:18px;padding:22px 10px 22px calc(10px + .18em);margin:16px 0 10px}
+#qr{display:flex;justify-content:center;margin:12px auto;padding:16px;background:#fff;border:1px solid var(--ln);border-radius:16px;width:max-content}#qr:fullscreen{width:100%;height:100%;align-items:center;border-radius:0}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;background:var(--okbg);color:var(--ok)}
+.pill.c{background:var(--soft);color:var(--mut)}.pill.late{background:var(--warnbg);color:var(--warn)}.pill.red{background:var(--errbg);color:var(--err)}
+table{width:100%;border-collapse:collapse;font-size:14px}th{font:600 12.5px var(--font);color:var(--mut)}td,th{padding:12px 10px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}
+tbody tr:last-child td{border-bottom:0}small{color:var(--mut)}
+.empty{text-align:center;color:var(--mut);padding:30px}.sc{overflow-x:auto}.bad{color:var(--err);font-weight:600}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px 12px 34px;border-radius:14px;display:none;z-index:99;max-width:90%;box-shadow:0 14px 34px -8px rgba(10,23,71,.5)}
+#toast:before{content:"";position:absolute;left:15px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--gold)}
+#auth{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(800px 500px at 90% -10%,rgba(242,176,30,.24),transparent),radial-gradient(700px 500px at 0 100%,#1B3190,transparent),var(--navy)}
+.authbox{width:100%;max-width:440px;padding:32px}
+.alogo{text-align:center}.alogo img{width:68px;height:68px;object-fit:contain}.alogo b{display:block;font:800 25px var(--disp);letter-spacing:-.03em;margin-top:6px}.alogo small{color:var(--mut)}
+.seg{display:flex;gap:4px;padding:4px;background:var(--soft);border-radius:14px;margin:22px 0 4px}.seg button{flex:1;border:0;background:none;padding:10px;border-radius:10px;font:600 14px var(--font);color:var(--mut);cursor:pointer}.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(10,23,71,.15)}
+.roles{display:flex;gap:6px;flex-wrap:wrap}.roles button{flex:1;min-width:110px;border:1px solid var(--ln);background:var(--card);border-radius:12px;padding:11px 8px;font:600 13px var(--font);color:var(--mut);cursor:pointer}.roles button.on{border-color:var(--gold);background:var(--tint);color:#5C3F00}
+.lnk{display:block;text-align:center;margin-top:16px;color:var(--b);font-weight:600;font-size:13.5px;cursor:pointer;text-decoration:none}
+.tl{list-style:none;margin:0;padding:0 0 0 12px;border-left:2px solid var(--ln)}.tl li{margin:6px 0;font-size:13px}
+details.opt{margin-top:14px;border:1px solid var(--ln);border-radius:14px;padding:4px 16px}details.opt summary{cursor:pointer;font-weight:600;padding:10px 0}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.chips .stat{flex:1;min-width:120px;padding:12px 14px}.chips .stat b{font-size:26px}
+@media(max-width:900px){
+#app{display:block;height:auto;overflow:visible}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--navy);padding:14px 16px}
+.brand{padding:0}.me{padding:0;border:0;background:none}.me>span{display:none}
+.tabs{flex-direction:row;position:sticky;top:0;z-index:20;padding:8px 12px;gap:6px}
+.tab{white-space:nowrap;padding:9px 14px}.tab.on:before{display:none}.tab.on{background:var(--gold);color:#0A1747}
+#app>section{padding:18px 14px 80px;overflow:visible}
+.bento{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+.ai-wrap{display:grid;grid-template-columns:220px 1fr;gap:16px}.ai-hist{display:grid;gap:6px;align-content:start}
+.ai-hist button{text-align:left;border:1px solid var(--ln);background:var(--card);color:var(--ink);border-radius:12px;padding:9px 12px;font:600 13px var(--font);cursor:pointer;display:flex;justify-content:space-between;gap:8px}.ai-hist button.on{border-color:var(--gold);background:var(--tint);color:#5C3F00}
+#aiLog{min-height:300px;max-height:56vh;overflow:auto;display:grid;gap:12px;align-content:start;padding:4px}
+.ai-m{display:flex;gap:8px;align-items:flex-end}.ai-m.user{justify-content:flex-end}.ai-b{max-width:82%;padding:11px 14px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--soft)}
+.ai-m.user .ai-b{background:var(--navy);color:#fff}.ai-m.err .ai-b{background:var(--errbg);color:var(--err)}
+.ai-sug{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.ai-in{display:flex;gap:8px;margin-top:12px}.ai-in input{flex:1}
+@media(max-width:900px){.ai-wrap{grid-template-columns:1fr}}
+.ax-sub{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.ax-sub button{border:1px solid var(--ln);background:var(--card);color:var(--ink);border-radius:10px;padding:7px 12px;font:600 13px var(--font);cursor:pointer}.ax-sub button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.ax-badge{display:inline-block;min-width:16px;margin-left:6px;padding:0 5px;border-radius:99px;background:var(--err);color:#fff;font:700 11px/16px var(--font);font-style:normal}
+.ai-in textarea,.ax-box textarea,.ax-modal textarea{flex:1;width:100%;min-height:44px;max-height:180px;padding:10px 14px;border:1px solid var(--ln);border-radius:12px;font:inherit;background:var(--card);color:var(--ink);outline:none;resize:vertical}
+.ai-in textarea:focus,.ax-box textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(242,176,30,.22)}
+.ax-col{display:flex;flex-direction:column;gap:6px;max-width:82%;min-width:0}.ax-col .ai-b{max-width:100%}.ai-b pre{white-space:pre}.ai-b code,.ax-code{font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}.ai-b code{background:rgba(127,127,127,.18);padding:1px 5px;border-radius:5px}
+.ax-code{display:block;overflow:auto;background:var(--soft);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;margin:8px 0 0;max-height:420px;white-space:pre}.ax-code code{background:none;padding:0}
+.tk-c{color:#7d8aa8;font-style:italic}.tk-s{color:#1d8a5a}.tk-n{color:#b8741a}.tk-k{color:#6b4de0;font-weight:600}@media(prefers-color-scheme:dark){.tk-s{color:#5FD6A0}.tk-n{color:#F6C65A}.tk-k{color:#a995ff}}
+.ax-plan,.ax-src,.ax-box,.ax-card{border:1px solid var(--ln);border-radius:12px;padding:10px 12px;background:var(--card);font-size:13px}.ax-plan ul{list-style:none;margin:6px 0 0;padding:0}.ax-plan li{padding:2px 0}.ax-plan li:before{content:"○ ";color:var(--mut)}.ax-plan li.done:before{content:"✓ ";color:var(--ok)}.ax-plan li.doing:before{content:"▶ ";color:var(--warn)}.ax-plan li.failed:before{content:"✕ ";color:var(--err)}
+.ax-plan details{margin-top:6px;color:var(--mut)}.ax-plan details div{padding:1px 0}.ax-plan .bad{color:var(--err)}
+.ax-file{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--ln);border-radius:12px;padding:8px 10px;background:var(--card)}.ax-file b{overflow-wrap:anywhere}.ax-sp{flex:1}.ax-m{color:var(--mut);font-size:12px}
+.ax-src a{color:var(--ink);text-decoration:underline;margin-right:10px;overflow-wrap:anywhere}.ax-opts,.ax-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}.ax-opts select{width:auto;max-width:220px}.ax-chk{display:flex;gap:6px;align-items:center;font-size:13px}.ax-chk input{width:auto;height:auto}
+.ax-pend{border:2px solid var(--gold);border-radius:14px;padding:12px;margin-top:12px;background:var(--card)}.ax-pend label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:13.5px}.ax-pend input{width:auto;height:auto;margin-top:3px}
+.ax-grid{display:grid;gap:10px;margin-top:12px}.ax-row{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px}.ax-prog{height:8px;border-radius:99px;background:var(--soft);overflow:hidden;margin:6px 0}.ax-prog i{display:block;height:100%;background:var(--gold)}
+.ax-ms{display:flex;gap:8px;align-items:center;padding:2px 0;font-size:13.5px}.ax-ms input{width:auto;height:auto}.ax-ms.done span{text-decoration:line-through;color:var(--mut)}.ax-adv{color:var(--warn);font-size:13px;margin:4px 0 0}
+.ax-n.unread{border-left:4px solid var(--gold)}.ax-n b{display:block}.ax-n p{margin:4px 0 0;white-space:pre-wrap;color:var(--mut);overflow-wrap:anywhere}
+.ax-modal{position:fixed;inset:0;background:rgba(5,10,30,.6);z-index:80;display:flex;align-items:center;justify-content:center;padding:16px}.ax-mb{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px;width:min(920px,100%);max-height:90vh;display:flex;flex-direction:column}.ax-mb .ax-code,.ax-mb textarea{flex:1;min-height:200px;max-height:none;overflow:auto;font:12.5px/1.5 ui-monospace,Menlo,monospace}
+.ax-hint{color:var(--mut);font-size:12.5px;margin:6px 0 0}.ax-side .ai-hist .ax-snip{font-weight:400;color:var(--mut);font-size:12px;display:block}
+@media(max-width:900px){.ax-col{max-width:94%}.ax-sub{flex-wrap:nowrap;overflow-x:auto}.ax-sub button{white-space:nowrap}}
+.crchk{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink);margin:12px 0 0}.crchk input{width:20px;height:20px;flex:none}.crchk small{color:var(--mut);font-weight:500}
+label small{font-weight:500}
+.crdrop{display:block;border:2px dashed var(--ln);border-radius:16px;padding:26px 16px;text-align:center;cursor:pointer;margin:0;color:var(--ink);transition:border-color .15s,background .15s}.crdrop:hover,.crdrop.over{border-color:var(--gold);background:var(--soft)}.crdrop b{display:block;font-size:15px;word-break:break-all}.crdrop span{color:var(--mut);font-size:12.5px}.crdrop.has{border-style:solid;border-color:var(--ok)}
+.crprog{margin-top:14px}.crbar{height:10px;background:var(--soft);border-radius:9px;overflow:hidden}.crbar i{display:block;height:100%;width:0;background:var(--gold);border-radius:9px;transition:width .2s}.crprog span{display:block;margin-top:8px;font-size:13px;color:var(--mut)}.crprog.err span{color:var(--err);font-weight:600}.crprog.ok span{color:var(--ok);font-weight:600}
+.crit{border:1px solid var(--ln);border-radius:14px;padding:14px;margin:10px 0;background:var(--card)}.crit h4{margin:0 0 4px;font:700 15px var(--disp)}.crit .meta{color:var(--mut);font-size:12.5px;margin:2px 0 8px}.crit .acts{display:flex;gap:6px;flex-wrap:wrap}.crit .err{color:var(--err);font-size:12.5px;margin:4px 0}
+.crmb{overflow:auto;max-height:70vh;padding:4px 2px}.crmb textarea{min-height:200px;width:100%;padding:10px 14px;border:1px solid var(--ln);border-radius:12px;font:13px/1.5 ui-monospace,Menlo,monospace;background:var(--card);color:var(--ink)}
+.crmd{line-height:1.65}.crmd h2,.crmd h3,.crmd h4{font-family:var(--disp);margin:1em 0 .4em}.crmd blockquote{border-left:4px solid var(--gold);background:var(--soft);margin:.8em 0;padding:8px 12px;border-radius:0 10px 10px 0}.crmd pre{background:var(--soft);padding:10px 12px;border-radius:10px;overflow:auto}.crmd code{background:var(--soft);padding:1px 5px;border-radius:5px}.crmd table{border-collapse:collapse}.crmd th,.crmd td{border:1px solid var(--ln);padding:5px 9px}
+.crq{border:1px solid var(--ln);border-radius:12px;margin:8px 0;padding:0 12px}.crq summary{cursor:pointer;padding:10px 0;font-weight:600}.crq .o{display:flex;gap:6px;align-items:center;margin:6px 0}.crq .o input[type=radio]{width:18px;height:18px;flex:none}.crq textarea{min-height:60px;font:inherit}
+</style>
+<style>
+body{font-size:13.5px}h3{font-size:16px}
+#app{grid-template-columns:224px minmax(0,1fr)}
+.brand{padding:18px 16px 12px}.brand img{width:36px;height:36px}.brand b{font-size:15px}.brand small{font-size:11px}
+.tab{padding:9px 12px;font-size:13px;border-radius:10px}.me{padding:12px 16px 16px;font-size:12px}.me b{font-size:13px}
+#app>section{padding:22px 26px 56px}
+.glass{padding:16px;border-radius:14px;margin-bottom:12px}
+.bento{gap:10px;margin-bottom:12px}.stat{padding:14px 16px;border-radius:14px}.stat b{font-size:26px;margin-bottom:6px}.stat span{font-size:12px}
+label{font-size:12px;margin:11px 0 5px}
+input,select,.dd-btn{height:38px;font-size:13.5px;border-radius:10px;padding:0 12px}
+.btn{height:36px;padding:0 16px;font-size:13px;border-radius:10px}.btn.sm{height:28px;padding:0 10px;font-size:12px;border-radius:8px}.btn.full{height:42px;font-size:14px;margin-top:18px}
+.row{gap:8px;margin-top:12px}
+.code{font-size:clamp(26px,4vw,38px);padding:16px 8px 16px calc(8px + .18em);border-radius:14px;margin:12px 0 8px}
+#qr{padding:12px;border-radius:12px}
+table{font-size:13px}td,th{padding:9px 8px}th{font-size:12px}
+.pill{font-size:11.5px;padding:2px 8px}
+.alogo b{font-size:21px}.alogo img{width:56px;height:56px}.authbox{padding:24px;max-width:400px}.seg button{padding:8px;font-size:13px}.roles button{padding:9px 6px;font-size:12.5px}
+.ai-b{padding:9px 12px}.chips .stat b{font-size:22px}
+@media(max-width:900px){.tab{padding:8px 12px}#app>section{padding:14px 12px 70px}}
+</style>
+</head>
+<body>
+<script>
+function showErr(m){var d=document.getElementById('err');if(!d){d=document.createElement('div');d.id='err';d.style.cssText='position:fixed;top:0;left:0;right:0;background:#d94848;color:#fff;padding:12px;z-index:999;font:13px sans-serif';document.body.appendChild(d)}d.textContent='Page error: '+m}
+addEventListener('error',function(e){showErr(e.message+(e.filename?' ('+e.filename.split('/').pop()+')':''))});
+addEventListener('unhandledrejection',function(e){showErr((e.reason&&e.reason.message)||e.reason)});
+</script>
+<div id="auth"><div class="glass authbox">
+<div class="alogo"><img src="data:image/png;base64,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" alt="Our Class Room"><b>Our Class Room</b><small>Host access · Smarter Attendance. Better Accountability.</small></div>
+<div class="seg"><button class="on" id="aIn">Sign in</button><button id="aUp">Create account</button></div>
+<div class="aup hide"><label>Full name</label><input id="aName" autocomplete="name">
+ <label>I am a</label><div class="roles" id="aRoles"><button type="button" data-r="lecturer" class="on">Lecturer</button><button type="button" data-r="course_rep">Course rep</button><button type="button" data-r="assistant_rep">Assistant rep</button></div></div>
+<label>Email</label><input id="aEmail" type="email" autocomplete="username">
+<label>Password</label><input id="aPw" type="password" placeholder="At least 8 characters">
+<div class="aup hide"><label>Confirm password</label><input id="aPw2" type="password" autocomplete="new-password">
+ <label>Host registration code</label><input id="aCode" placeholder="Provided by your department"></div>
+<button class="btn full" id="aGo">Sign in</button>
+<a class="lnk" id="aForgot">Forgot password?</a><a class="lnk" href="index.html">Student? Mark attendance →</a>
+</div></div>
+<div class="wrap hide" id="app">
+<div class="top"><div class="brand"><img src="data:image/png;base64,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" alt="Our Class Room"><div><b id="inst">Our Class Room</b><small>Smarter Attendance. Better Accountability.</small><button type="button" data-ocr-install hidden style="background:none;border:0;padding:0;color:var(--b);text-decoration:underline;cursor:pointer;font:inherit;font-size:12px">Install app</button></div></div>
+  <div class="me"><span><b id="who"></b><br><span id="role"></span></span><button class="btn alt" id="signout">Sign out</button></div></div>
+<div class="tabs"><button class="tab on" data-t="dash">Dashboard</button><button class="tab" data-t="host">Host attendance</button><button class="tab" data-t="mon">Lecture monitor</button><button class="tab" data-t="cr">Class Room</button><button class="tab" data-t="tt">Lecture times</button><button class="tab" data-t="rp">Reports</button><button class="tab" data-t="hist">History</button><button class="tab" data-t="sec">Security alerts</button><button class="tab" data-t="ai">Class Room AI</button><button class="tab hide" data-t="cfg">Settings</button></div>
+
+<section id="t-dash">
+  <div class="bento"><div class="stat"><b id="s1">–</b><span>Registered students</span></div><div class="stat"><b id="s2">–</b><span>Courses</span></div><div class="stat"><b id="s3">–</b><span>Total sessions</span></div><div class="stat"><b id="s4">–</b><span>Active now</span></div></div>
+  <div class="grid2"><div class="glass"><h3>Recent activity</h3><div id="recent"></div></div><div class="glass"><h3>Notifications</h3><div id="notes"></div></div></div>
+  <div class="glass"><h3>Attendance analytics</h3><div id="chart"></div></div>
+</section>
+
+<section id="t-host" class="hide">
+  <div class="glass"><h3>My courses</h3><p style="color:var(--mut);margin:0 0 8px">Add the courses you teach or represent. You can only host attendance for these.</p>
+    <div id="mine"></div><div class="row"><button class="btn alt" id="addc">+ Add course</button></div>
+    <div id="newc" class="hide"><div class="grid2"><div><label>Course code</label><input id="nCode" placeholder="e.g. CSC201"></div><div><label>Level</label><input id="nLevel" placeholder="e.g. 200"></div></div>
+      <label>Course title</label><input id="nTitle"><label>Department</label><div id="nDept"></div>
+      <div class="row"><button class="btn alt" id="nSave">Save course</button></div></div></div>
+  <div class="glass" id="start"><h3>Start attendance</h3>
+    <label>Course</label><div id="course"></div>
+    <a class="lnk" id="newToggle" style="text-align:left;margin-top:8px">Can't find your course? Add it</a>
+    <div class="grid2"><div><label>Academic session</label><input id="acad" placeholder="e.g. 2026/2027"></div><div><label>Semester</label><input id="sem" placeholder="e.g. First"></div></div>
+    <label>Duration (minutes)</label><input id="mins" type="number" min="1" max="240" value="15">
+    <details class="opt"><summary>Lecture timing, venue and verification (optional)</summary>
+      <div class="grid2"><div><label>Lecture starts</label><input id="lsStart" type="datetime-local"></div><div><label>Grace period (min)</label><input id="lsGrace" type="number" min="0"></div></div>
+      <div class="grid2"><div><label>Attendance closes</label><input id="lsClose" type="datetime-local"></div><div><label>Lecture ends</label><input id="lsEnd" type="datetime-local"></div></div>
+      <label>Venue name</label><input id="lsVenue" placeholder="e.g. Lecture Theatre 2">
+      <div class="grid2"><div><label>Venue latitude</label><input id="lsLat" type="number" step="any"></div><div><label>Venue longitude</label><input id="lsLng" type="number" step="any"></div></div>
+      <div class="row"><button type="button" class="btn alt sm" id="lsGeo">Use my current location</button><button type="button" class="btn alt sm" id="lsFill">Fill from timetable</button></div>
+      <div class="grid2"><div><label>Approved radius (m)</label><input id="lsRad" type="number" min="1"></div><div><label>Time to respond (sec)</label><input id="lsResp" type="number" min="1"></div></div>
+      <div class="grid2"><div><label>Random checks at random times</label><input id="lsRand" type="number" min="0" max="10"></div><div><label>Final check (min before end)</label><input id="lsFinal" type="number" min="0"></div></div>
+    </details>
+    <div class="row"><button class="btn" id="go">Start Attendance</button></div></div>
+  <div class="hide" id="live"><div class="grid2">
+    <div class="glass"><span class="pill" id="st">Active</span><h3 id="mTitle" style="margin-top:8px"></h3><p id="mSub" style="color:var(--mut);margin:0"></p>
+      <div class="code" id="codeText"></div><div style="text-align:center;color:var(--mut)">Expires <b id="exp"></b></div>
+      <div class="row"><button class="btn" id="copy">Copy code</button><button class="btn alt" id="share">Share link</button><button class="btn alt" id="regen">New code</button><button class="btn alt" id="wa">WhatsApp</button><button class="btn alt" id="openMon">Lecture monitor</button><button class="btn red" id="close">Close</button></div></div>
+    <div class="glass"><div id="qr"></div><div class="row" style="justify-content:center"><button class="btn alt" id="dlqr">Download QR</button><button class="btn alt" id="fsqr">Fullscreen</button></div></div></div>
+    <div class="glass"><h3>Present: <span id="count">0</span></h3>
+      <div class="sc"><table><thead><tr><th>Name</th><th>Matric</th><th>Time</th><th>Verification</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div><div class="empty" id="none">Waiting for submissions…</div>
+      <div class="row"><button class="btn alt" id="lcsv">Export CSV</button><button class="btn alt" id="lprint">Print / PDF</button><button class="btn alt" id="lmail">Email</button></div></div></div>
+</section>
+
+<section id="t-mon" class="hide">
+  <div class="glass"><h3>Lecture monitor</h3><label>Lecture</label><div id="monSel"></div>
+    <div class="chips"><div class="stat"><b id="mPres">0</b><span>Present</span></div><div class="stat"><b id="mLate">0</b><span>Late</span></div><div class="stat"><b id="mFlag">0</b><span>Flagged</span></div><div class="stat"><b id="mEarly">0</b><span>Early departures</span></div></div>
+    <p id="mRound" style="color:var(--mut);margin:6px 0"></p>
+    <div class="grid2"><div><label>Response time (sec, optional)</label><input id="vSecs" type="number" min="1" placeholder="Use lecture default"></div></div>
+    <div class="row"><button class="btn" id="vNow">Verify attendance now</button><button class="btn alt" id="vFinal">Final check now</button><button class="btn alt" id="mCsv">Export Excel</button></div></div>
+  <div class="glass"><h3>Late arrivals</h3><div id="mLateList"></div></div>
+  <div class="glass"><h3>Attendance timeline</h3><div class="sc"><table><thead><tr><th>Student</th><th>Timeline</th><th>Flags</th></tr></thead><tbody id="mRows"></tbody></table></div><div class="empty" id="mNone">No check-ins yet.</div>
+    <p style="color:var(--mut);font-size:13px">A missed response or missing GPS never marks a student absent. It is flagged here for your review.</p></div>
+</section>
+<section id="t-cr" class="hide">
+  <div class="ax-sub" id="crSub"><button data-cs="up" class="on">Upload</button><button data-cs="lib">Notes &amp; past questions</button><button data-cs="qz">Quizzes</button><button data-cs="stu">Students by level</button><button data-cs="crs">Courses</button></div>
+
+  <div class="glass" id="cs-up">
+    <h3>Share a PDF with students</h3>
+    <p style="color:var(--mut);margin:0">Pick a PDF from your phone or computer. AI reads all of it and turns it into structured study notes that students read inside the app, then builds a quick quiz. The original PDF stays private to you and administrators.</p>
+    <div class="grid2"><div><label>Type</label><select id="cuKind"><option value="notes">Lecture notes / study material</option><option value="past_question">Past examination questions</option></select></div>
+      <div><label>Level</label><select id="cuLevel"><option value="">Select level</option></select></div></div>
+    <label>Title</label><input id="cuTitle" maxlength="200" placeholder="e.g. Week 3: Data structures — stacks and queues">
+    <div class="grid2"><div><label>Course code</label><input id="cuCode" list="crCodes" maxlength="20" placeholder="e.g. CSC201" autocapitalize="characters"><datalist id="crCodes"></datalist></div>
+      <div><label>Course title <small>(optional)</small></label><input id="cuCTitle" maxlength="160" placeholder="e.g. Data Structures"></div></div>
+    <label>Department <small>(type any name)</small></label><input id="cuDept" list="crDepts" maxlength="120" placeholder="Type the department these students belong to" autocomplete="off"><datalist id="crDepts"></datalist>
+    <label class="crchk"><input type="checkbox" id="cuAll"> Share with all departments at this level <small>(for general courses)</small></label>
+    <div class="grid2"><div><label>Session / year <small>(optional)</small></label><input id="cuSess" maxlength="40" placeholder="e.g. 2024/2025"></div><div><label>Note for students <small>(optional)</small></label><input id="cuDesc" maxlength="300"></div></div>
+    <label>PDF file</label>
+    <label class="crdrop" id="cuDrop" for="cuFile"><input type="file" id="cuFile" accept="application/pdf,.pdf" class="hide"><b id="cuFileName">Tap to choose a PDF</b><span id="cuFileInfo">PDF only · up to 20 MB</span></label>
+    <div class="crprog hide" id="cuProg"><div class="crbar"><i id="cuBar"></i></div><span id="cuMsg"></span></div>
+    <div class="row"><button class="btn" id="cuGo">Upload and convert to notes</button><button class="btn alt hide" id="cuReset">Upload another</button></div>
+  </div>
+
+  <div class="glass hide" id="cs-lib"><h3>Notes &amp; past questions</h3>
+    <div class="grid2"><div><label>Type</label><select id="clKind"><option value="">All</option><option value="notes">Lecture notes</option><option value="past_question">Past questions</option></select></div><div><label>Level</label><select id="clLevel"><option value="">All levels</option></select></div></div>
+    <label>Search</label><input id="clQ" placeholder="Title, course code, department">
+    <div id="clList" style="margin-top:12px"></div></div>
+
+  <div class="glass hide" id="cs-qz"><h3>Quizzes</h3><p style="color:var(--mut);margin:0">Quizzes are generated automatically from each PDF. You can edit questions, hide a quiz, or regenerate it.</p><div id="cqList" style="margin-top:12px"></div></div>
+
+  <div class="glass hide" id="cs-stu"><h3>Students by level</h3>
+    <div class="grid2"><div><label>Level</label><select id="csLevel"><option value="">All levels</option></select></div><div><label>Department contains</label><input id="csDept" placeholder="Any department"></div></div>
+    <div class="row"><button class="btn" id="csGo">Show students</button><button class="btn alt" id="csXls">Export Excel</button></div>
+    <div class="chips" id="csChips" style="margin-top:14px"></div>
+    <div class="sc"><table><thead><tr><th>Name</th><th>Matric</th><th>Department</th><th>Level</th></tr></thead><tbody id="csRows"></tbody></table></div><div class="empty hide" id="csNone">No students found. Students appear here after they set up Class Room or choose a level at check-in.</div></div>
+
+  <div class="glass hide" id="cs-crs"><h3>Courses</h3><p style="color:var(--mut);margin:0" id="ccNote"></p>
+    <div class="row"><button class="btn alt" id="ccAdd">+ Add course</button></div><div class="sc" style="margin-top:10px"><table><thead><tr><th>Code</th><th>Title</th><th>Department</th><th>Level</th><th></th></tr></thead><tbody id="ccRows"></tbody></table></div></div>
+
+  <div id="crModal" class="ax-modal hide" role="dialog" aria-modal="true"><div class="ax-mb"><div class="ax-bar"><b id="crMT"></b><span class="ax-sp"></span><button class="btn sm hide" id="crMSave">Save</button><button class="btn alt sm" id="crMX">Close</button></div><div id="crMB" class="crmb"></div></div></div>
+</section>
+
+<section id="t-tt" class="hide">
+  <div class="glass"><h3>Lecture times</h3><p style="color:var(--mut);margin:0">Students who follow or attend a course see these times and get reminders. Changes are shown to them as timetable updates.</p>
+    <label>Course</label><div id="ttCourse"></div>
+    <div class="grid2"><div><label>Day</label><div id="ttDay"></div></div><div><label>Venue name</label><input id="ttVenue"></div></div>
+    <div class="grid2"><div><label>Starts</label><input id="ttStart" type="time"></div><div><label>Ends</label><input id="ttEnd" type="time"></div></div>
+    <div class="grid2"><div><label>Venue latitude</label><input id="ttLat" type="number" step="any"></div><div><label>Venue longitude</label><input id="ttLng" type="number" step="any"></div></div>
+    <div class="grid2"><div><label>Radius (m)</label><input id="ttRad" type="number" min="1"></div><div><label>&nbsp;</label><button type="button" class="btn alt sm" id="ttGeo">Use my current location</button></div></div>
+    <div class="grid2"><div><label>Valid from</label><input id="ttFrom" type="date"></div><div><label>Valid until</label><input id="ttTo" type="date"></div></div>
+    <div class="row"><button class="btn" id="ttSave">Save lecture time</button><button class="btn alt" onclick="ttReset()">Clear</button></div></div>
+  <div class="glass"><h3>Scheduled lectures</h3><div class="sc" id="ttList"></div></div>
+</section>
+<section id="t-rp" class="hide">
+  <div class="glass"><h3>Attendance reports</h3><label>Course</label><div id="rpCourse"></div>
+    <label>Period</label><div id="rpPeriod"></div>
+    <div id="rpSemWrap" class="hide"><label>Semester</label><div id="rpSem"></div></div>
+    <div class="row"><button class="btn" id="rpRun">Generate report</button></div></div>
+  <div class="glass hide" id="rpOut"><h3 id="rpTitle"></h3><p id="rpSub" style="color:var(--mut);margin:0"></p>
+    <div class="sc"><table><thead><tr><th>#</th><th>Name</th><th>Matric</th><th>Present</th><th>Late</th><th>Absent</th><th>Early flags</th><th>%</th></tr></thead><tbody id="rpRows"></tbody></table></div>
+    <div class="row"><button class="btn alt" id="rpPdf">Print / PDF</button><button class="btn alt" id="rpXls">Export Excel</button></div></div>
+</section>
+<section id="t-sec" class="hide"><div class="glass"><h3>Security alerts</h3><p style="color:var(--mut);margin:0">Automatic checks on shared devices, venue location, repeated failed checks and impossible travel. These are leads for you to review, not proof. Nothing is changed automatically.</p>
+<div class="row"><button class="btn" id="secScan">Scan my recent lectures</button></div><div class="sc" style="margin-top:12px"><table><thead><tr><th>When</th><th>Alert</th><th>Evidence</th><th>Status</th></tr></thead><tbody id="secRows"></tbody></table></div><div class="empty hide" id="secNone">No alerts.</div></div></section>
+<section id="t-ai" class="hide"><div class="ai-wrap">
+<div class="glass ax-side"><button class="btn sm" id="aiNew">New chat</button>
+<input id="axSearch" placeholder="Search all chats" maxlength="200" style="margin-top:10px"><div class="ai-hist" id="aiHist" style="margin-top:12px"></div></div>
+<div>
+<div class="ax-sub" id="axSub"><button data-ax="chat" class="on">Chat</button><button data-ax="files">Files</button><button data-ax="goals">Goals</button><button data-ax="watch">Alerts<i id="axBadge" class="ax-badge hide"></i></button><button data-ax="mem">Memory &amp; settings</button></div>
+<div class="glass" id="ax-chat"><h3>Class Room AI</h3><p style="color:var(--mut);margin:0">Attendance answers come from your real records. Flags are leads for your review, not proof. The AI cannot run code: code it writes is reviewed by reading only.</p>
+<div class="ai-sug" id="aiSug"></div><div id="aiLog"></div><div id="axPend"></div><div class="ai-sug" id="axNudge"></div>
+<div class="ax-opts"><label class="ax-chk"><input type="checkbox" id="axAgent"> Agent mode <small>(plans and works in steps; counts as 3 requests)</small></label>
+<select id="axProj" aria-label="Project for new chats"></select><button class="btn alt sm" id="axImgBtn" type="button">Attach image</button><input type="file" id="axImg" accept="image/jpeg,image/png,image/webp" class="hide"><span id="axImgName" class="ax-m"></span></div>
+<div class="ai-in"><textarea id="aiQ" rows="2" maxlength="4000" placeholder="Ask about attendance, or ask me to write, review or research something"></textarea><button class="btn" id="aiGo">Send</button></div></div>
+<div class="glass hide" id="ax-files"></div><div class="glass hide" id="ax-goals"></div><div class="glass hide" id="ax-watch"></div><div class="glass hide" id="ax-mem"></div>
+</div></div>
+<div id="axModal" class="ax-modal hide" role="dialog" aria-modal="true"><div class="ax-mb"><div class="ax-bar"><b id="axMT"></b><span class="ax-sp"></span><button class="btn alt sm" id="axMEdit">Edit</button><button class="btn sm hide" id="axMSave">Save</button><button class="btn alt sm" id="axMDl">Download</button><button class="btn alt sm" id="axMX">Close</button></div><pre class="ax-code" id="axMV"></pre><textarea id="axME" class="hide"></textarea></div></div></section>
+<section id="t-cfg" class="hide"><div class="glass"><h3>Attendance settings</h3><p style="color:var(--mut);margin:0">Administrators only. Values are JSON. Changes apply immediately to everyone.</p><div class="sc"><table><tbody id="cfgRows"></tbody></table></div></div></section>
+
+<section id="t-hist" class="hide">
+  <div class="glass"><h3>Attendance history</h3><label>Search</label><input id="q" placeholder="Course, code, session, date…">
+    <div class="sc"><table><thead><tr><th>Date</th><th>Course</th><th>Level</th><th>Dept</th><th>Status</th><th></th></tr></thead><tbody id="hrows"></tbody></table></div><div class="empty hide" id="hnone">No sessions found.</div></div>
+  <div class="glass hide" id="rep"><h3 id="rTitle"></h3><p id="rSub" style="color:var(--mut);margin:0"></p>
+    <div class="sc"><table><thead><tr><th>#</th><th>Name</th><th>Matric</th><th>Time</th><th>Status</th></tr></thead><tbody id="rrows"></tbody></table></div>
+    <div class="row"><button class="btn alt" id="rmon">Lecture monitor</button><button class="btn alt" id="rcsv">Export CSV</button><button class="btn alt" id="rprint">Print / PDF</button><button class="btn alt" id="rwa">WhatsApp</button><button class="btn alt" id="rmail">Email</button></div></div>
+</section>
+</div><div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// Runtime config. Only the public anon key belongs here, never a service-role key.
+window.OURCLASSROOM = {
+  SUPABASE_URL: "https://lfgyrtqsliytbzueokuw.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmZ3lydHFzbGl5dGJ6dWVva3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxODQyOTUsImV4cCI6MjEwOTc2MDI5NX0.CZJUKT8aIZtu2ZBvaa9vESm_AmZVp_oKgUquzmlQn-E"
+};
+</script>
+<script>
+const sb = supabase.createClient(OURCLASSROOM.SUPABASE_URL, OURCLASSROOM.SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(m) { const t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', 3400); }
+function makeDropdown(el, ph, items = []) {
+  el.classList.add('dd'); let value = null;
+  el.innerHTML = '<button type="button" class="dd-btn"><span></span></button><div class="dd-list"></div>';
+  const btn = el.firstChild, lab = btn.firstChild, list = el.lastChild;
+  list.innerHTML = items.length ? '' : '<div class="dd-item" style="color:var(--mut)">No options available</div>';
+  items.forEach(i => { const d = document.createElement('div'); d.className = 'dd-item'; d.textContent = i.label; d.onclick = () => { value = i.value; lab.textContent = i.label; el.classList.remove('open'); }; list.appendChild(d); });
+  lab.textContent = ph; btn.onclick = () => el.classList.toggle('open');
+  document.addEventListener('click', e => { if (!el.contains(e.target)) el.classList.remove('open'); });
+  return { get: () => value };
+}
+
+function makeCombo(el, ph, items, allowNew) {
+  el.classList.add('dd'); let sel = null;
+  el.innerHTML = '<input autocomplete="off"><div class="dd-list"></div>';
+  const inp = el.firstChild, list = el.lastChild; inp.placeholder = ph;
+  const draw = () => {
+    const q = inp.value.trim().toLowerCase(), f = items.filter(i => i.label.toLowerCase().includes(q)); list.innerHTML = '';
+    const add = (t, fn, mute) => { const d = document.createElement('div'); d.className = 'dd-item'; d.textContent = t; if (mute) d.style.color = 'var(--mut)'; else d.onmousedown = e => { e.preventDefault(); fn(); el.classList.remove('open'); }; list.appendChild(d); };
+    f.forEach(i => add(i.label, () => { sel = i; inp.value = i.label; }));
+    if (allowNew && q && !items.some(i => i.label.toLowerCase() === q)) add('Add "' + inp.value.trim() + '" as new course', () => el.onNew && el.onNew(inp.value.trim()));
+    if (!list.children.length) add(items.length ? 'No matches' : 'No courses yet. Type one to add it.', null, true);
+    el.classList.add('open');
+  };
+  inp.oninput = () => { sel = null; draw(); }; inp.onfocus = draw;
+  document.addEventListener('click', e => { if (!el.contains(e.target)) el.classList.remove('open'); });
+  return { get: () => sel || (allowNew && inp.value.trim() ? { label: inp.value.trim(), isNew: true } : null), pick: v => { const i = items.find(x => x.value === v); if (i) { sel = i; inp.value = i.label; } } };
+}
+
+let dd, cur, chan, recs = [], courses = [], hist = [], inst = 'Our Class Room', hs, hr = [];
+const fmtT = d => new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const link = s => location.href.replace(/admin\.html.*$/, '') + 'index.html?code=' + s.code;
+const cinfo = s => s.courses || courses.find(x => x.id === s.course_id) || {};
+
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  ['dash', 'host', 'mon', 'cr', 'tt', 'rp', 'hist', 'sec', 'ai', 'cfg'].forEach(t => $('t-' + t).classList.toggle('hide', t !== b.dataset.t));
+  if (b.dataset.t === 'cr' && window.crInit) crInit(); if (b.dataset.t === 'hist') loadHist(); if (b.dataset.t === 'dash') loadDash();
+});
+$('signout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+function showAuth() { $('auth').classList.remove('hide'); $('app').classList.add('hide'); }
+async function boot() {
+  if (typeof supabase === 'undefined' || !window.OURCLASSROOM) throw new Error('Supabase library failed to load. Check your internet connection.');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return showAuth();
+  let { data: p } = await sb.from('profiles').select('full_name,role').eq('id', session.user.id).maybeSingle();
+  if (!p) {
+    const m = session.user.user_metadata || {};
+    const { error } = await sb.rpc('register_host', { p_name: m.full_name || '', p_role: m.role || '', p_code: m.signup_code || '' });
+    if (error) { await sb.auth.signOut(); showAuth(); return toast(error.message); }
+    ({ data: p } = await sb.from('profiles').select('full_name,role').eq('id', session.user.id).single());
+  }
+  $('auth').classList.add('hide'); $('app').classList.remove('hide');
+  $('who').textContent = p.full_name; $('role').textContent = p.role.replace('_', ' ');
+  const { data: s } = await sb.from('settings').select('value').eq('key', 'institution_name').maybeSingle();
+  if (s?.value) { inst = s.value; $('inst').textContent = inst; }
+  await loadCourses(); await ocrInit(p.role); loadDash();
+  const { data: open } = await sb.from('attendance_sessions').select('*').eq('status', 'active').gt('expires_at', new Date().toISOString()).limit(1);
+  if (open?.length) { document.querySelector('[data-t=host]').click(); show(open[0]); }
+}
+
+
+// ---- Host sign in / create account ----
+let signup = false, role = 'lecturer';
+function mode(up) {
+  signup = up; $('aIn').classList.toggle('on', !up); $('aUp').classList.toggle('on', up);
+  document.querySelectorAll('.aup').forEach(e => e.classList.toggle('hide', !up));
+  $('aGo').textContent = up ? 'Create host account' : 'Sign in'; $('aForgot').classList.toggle('hide', up);
+}
+$('aIn').onclick = () => mode(false); $('aUp').onclick = () => mode(true);
+$('aRoles').querySelectorAll('button').forEach(b => b.onclick = () => { role = b.dataset.r; $('aRoles').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); });
+async function authSubmit() {
+  const email = $('aEmail').value.trim(), password = $('aPw').value, name = $('aName').value.trim();
+  if (!email || !password) return toast('Enter email and password');
+  if (signup) {
+    if (!name) return toast('Enter your full name');
+    if (password.length < 8) return toast('Password must be at least 8 characters');
+    if (password !== $('aPw2').value) return toast('Passwords do not match');
+  }
+  $('aGo').disabled = true;
+  const r = signup
+    ? await sb.auth.signUp({ email, password, options: { data: { full_name: name, role, signup_code: $('aCode').value.trim() } } })
+    : await sb.auth.signInWithPassword({ email, password });
+  $('aGo').disabled = false;
+  if (r.error) return toast(r.error.message);
+  if (signup && !r.data.session) { toast('Account created. Confirm your email, then sign in.'); return mode(false); }
+  boot();
+}
+$('aGo').onclick = authSubmit;
+['aPw', 'aPw2', 'aCode'].forEach(i => $(i).addEventListener('keydown', e => e.key === 'Enter' && authSubmit()));
+$('aForgot').onclick = async () => {
+  const email = $('aEmail').value.trim(); if (!email) return toast('Enter your email first');
+  const { error } = await sb.auth.resetPasswordForEmail(email);
+  toast(error ? error.message : 'Password reset email sent');
+};
+
+let nd;
+async function loadCourses() {
+  const sel = 'id,department_id,code,title,level,departments(name)';
+  const { data: a } = await sb.from('course_assignments').select(`courses(${sel})`);
+  courses = (a || []).map(x => x.courses);
+  const { data: all } = await sb.from('courses').select(sel).order('code');
+  dd = makeCombo($('course'), 'Type or choose a course (code or title)', (all || []).map(c => ({ value: c.id, label: `${c.code} — ${c.title} (${c.level})` })), true);
+  $('course').onNew = openForm;
+  const { data: deps } = await sb.from('departments').select('id,name').order('name');
+  nd = makeCombo($('nDept'), 'Type or choose a department', (deps || []).map(d => ({ value: d.id, label: d.name })), true);
+  $('mine').innerHTML = courses.length ? courses.map(c => `<span class="pill" style="margin:3px;padding:6px 12px">${esc(c.code)} · ${esc(c.level)} <b data-id="${c.id}" style="cursor:pointer;margin-left:6px">×</b></span>`).join('') : '<div class="empty" style="padding:12px">No courses yet. Add one below.</div>';
+  $('mine').querySelectorAll('b').forEach(b => b.onclick = async () => {
+    const { error } = await sb.rpc('remove_my_course', { p_course: b.dataset.id });
+    if (error) return toast(error.message); toast('Course removed'); loadCourses();
+  });
+}
+$('newToggle').onclick = () => openForm();
+$('nSave').onclick = async () => {
+  const code = $('nCode').value.trim(), level = $('nLevel').value.trim(), title = $('nTitle').value.trim(), d = nd.get();
+  if (!code || !level || !title || !d) return toast('Fill in code, level, title and department');
+  $('nSave').disabled = true;
+  const { data, error } = await sb.rpc('create_my_course', { p_dept: d.label, p_code: code, p_title: title, p_level: level });
+  $('nSave').disabled = false;
+  if (error) return toast(error.message);
+  await loadCourses(); dd.pick(data); $('newc').classList.add('hide'); ['nCode', 'nLevel', 'nTitle'].forEach(i => $(i).value = ''); toast('Course saved');
+};
+function openForm(text) {
+  $('newc').classList.remove('hide');
+  if (text) { if (/^\S{2,10}$/.test(text)) $('nCode').value = text.toUpperCase(); else $('nTitle').value = text; }
+  $('newc').scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => $('nCode').focus(), 300);
+}
+$('addc').onclick = () => openForm();
+
+async function loadDash() {
+  const cnt = (t, f) => { let q = sb.from(t).select('*', { count: 'exact', head: true }); return f ? f(q) : q; };
+  const [st, se, ac] = await Promise.all([cnt('students'), cnt('attendance_sessions'), cnt('attendance_sessions', q => q.eq('status', 'active').gt('expires_at', new Date().toISOString()))]);
+  $('s1').textContent = st.count ?? 0; $('s2').textContent = courses.length; $('s3').textContent = se.count ?? 0; $('s4').textContent = ac.count ?? 0;
+  const { data: r } = await sb.from('attendance_records').select('full_name,matric_no,submitted_at,attendance_sessions(courses(code))').order('submitted_at', { ascending: false }).limit(6);
+  $('recent').innerHTML = r?.length ? '<table>' + r.map(x => `<tr><td>${esc(x.full_name)}<br><small style="color:var(--mut)">${esc(x.matric_no)}</small></td><td>${esc(x.attendance_sessions?.courses?.code)}</td><td>${fmtT(x.submitted_at)}</td></tr>`).join('') + '</table>' : '<div class="empty">No attendance activity yet.</div>';
+  const { data: n } = await sb.from('notifications').select('body,created_at').order('created_at', { ascending: false }).limit(5);
+  $('notes').innerHTML = n?.length ? n.map(x => `<p style="margin:10px 0">${esc(x.body)}<br><small style="color:var(--mut)">${new Date(x.created_at).toLocaleString()}</small></p>`).join('') : '<div class="empty">No notifications.</div>';
+  const { data: ss } = await sb.from('attendance_sessions').select('id,code,created_at,attendance_records(count)').order('created_at', { ascending: false }).limit(8);
+  const mx = Math.max(1, ...(ss || []).map(x => x.attendance_records[0].count));
+  $('chart').innerHTML = ss?.length ? ss.reverse().map(x => `<div style="display:flex;align-items:center;gap:10px;margin:8px 0"><span style="width:70px;font-size:12px;color:var(--mut)">${esc(x.code)}</span><div style="flex:1;background:var(--soft);border-radius:99px;height:12px"><div style="width:${x.attendance_records[0].count / mx * 100}%;height:100%;border-radius:99px;background:var(--gold)"></div></div><b style="width:30px">${x.attendance_records[0].count}</b></div>`).join('') : '<div class="empty">Host a session to see analytics.</div>';
+}
+
+$('go').onclick = async () => {
+  const pick = dd.get(); if (pick?.isNew) { openForm(pick.label); return toast('Add the course details, then it joins My courses'); }
+  const cid = pick?.value, acad = $('acad').value.trim(), sem = $('sem').value.trim(), m = +$('mins').value;
+  if (!cid || !acad || !sem || !(m > 0)) return toast('Complete all fields');
+  $('go').disabled = true;
+  if (!courses.some(c => c.id === cid)) {
+    const r0 = await sb.rpc('add_my_course', { p_course: cid });
+    if (r0.error) { $('go').disabled = false; return toast(r0.error.message); }
+    await loadCourses();
+  }
+  const { data, error } = await sb.rpc('start_session', { p_course: cid, p_minutes: m, p_acad: acad, p_sem: sem });
+  $('go').disabled = false;
+  if (error) return toast(error.message);
+  await applySettings(data.id); show(data); toast('Attendance started');
+};
+
+async function show(s) {
+  cur = s; const c = cinfo(s);
+  $('start').classList.add('hide'); $('live').classList.remove('hide');
+  $('mTitle').textContent = `${c.code || ''} — ${c.title || ''}`;
+  $('mSub').textContent = `${c.departments?.name || ''} · ${c.level || ''} · ${s.academic_session} ${s.semester} semester · ${new Date(s.created_at).toLocaleDateString()}`;
+  $('codeText').textContent = s.code; $('exp').textContent = fmtT(s.expires_at);
+  drawQR(); recs = [];
+  const { data } = await sb.from('attendance_records').select('*').eq('session_id', s.id).order('submitted_at');
+  recs = data || []; render();
+  chan = sb.channel('rec-' + s.id).on('postgres_changes', { event: '*', schema: 'public', table: 'attendance_records' }, e => {
+    if (e.eventType === 'INSERT' && e.new.session_id === s.id) { recs.push(e.new); toast(e.new.full_name + (e.new.status === 'pending' ? ' needs approval' : ' checked in')); }
+    else if (e.eventType === 'UPDATE') recs = recs.map(x => x.id === e.new.id ? e.new : x);
+    else if (e.eventType === 'DELETE') recs = recs.filter(x => x.id !== e.old.id);
+    render();
+  }).subscribe();
+}
+function drawQR() { $('qr').innerHTML = ''; new QRCode($('qr'), { text: link(cur), width: 230, height: 230 }); }
+function render() {
+  const pres = recs.filter(r => r.status !== 'pending').length; $('count').textContent = pres;
+  $('none').classList.toggle('hide', recs.length > 0);
+  $('rows').innerHTML = recs.map(r => `<tr><td>${esc(r.full_name)}</td><td>${esc(r.matric_no)}</td><td>${fmtT(r.submitted_at)}${r.checkin_class === 'late' ? ` <span class="pill late">Late +${r.late_minutes}m</span>` : ''}</td><td>${r.method === 'liveness' ? 'Live ✓' : 'Host review'}</td><td>${r.status === 'pending' ? `<button class="btn alt" data-a="approve_record" data-id="${r.id}">Approve</button> <button class="btn red" data-a="reject_record" data-id="${r.id}">Reject</button>` : esc(r.status)}</td></tr>`).join('');
+}
+$('rows').onclick = async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const { error } = await sb.rpc(b.dataset.a, { p_id: b.dataset.id });
+  if (error) return toast(error.message);
+  recs = b.dataset.a === 'reject_record' ? recs.filter(x => x.id !== b.dataset.id) : recs.map(x => x.id === b.dataset.id ? { ...x, status: 'present' } : x); render();
+};
+$('regen').onclick = async () => {
+  const { data, error } = await sb.rpc('regenerate_code', { p_id: cur.id });
+  if (error) return toast(error.message); cur.code = data; $('codeText').textContent = data; drawQR(); toast('New code generated; the old code no longer works');
+};
+async function copyText(t, msg) {
+  try { await navigator.clipboard.writeText(t); return toast(msg); } catch (e) { }
+  const a = document.createElement('textarea'); a.value = t; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.focus(); a.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch (e) { }
+  a.remove(); toast(ok ? msg : 'Copy is blocked here. Your code is ' + t);
+}
+$('copy').onclick = () => copyText(cur.code, 'Code copied');
+$('share').onclick = async () => { try { if (navigator.share) return await navigator.share({ title: 'Our Class Room attendance', url: link(cur) }); } catch (e) { if (e.name === 'AbortError') return; } copyText(link(cur), 'Link copied'); };
+$('wa').onclick = () => open('https://wa.me/?text=' + encodeURIComponent(`Attendance is open. Code ${cur.code}\n${link(cur)}`));
+$('fsqr').onclick = () => $('qr').requestFullscreen?.();
+$('dlqr').onclick = () => { const cv = $('qr').querySelector('canvas'); const a = document.createElement('a'); a.href = cv.toDataURL('image/png'); a.download = `ourclassroom-${cur.code}.png`; a.click(); };
+$('close').onclick = async () => {
+  if (!confirm('Close this attendance session?')) return;
+  const { error } = await sb.rpc('close_session', { p_id: cur.id });
+  if (error) return toast(error.message);
+  if (chan) sb.removeChannel(chan); toast('Attendance closed');
+  $('live').classList.add('hide'); $('start').classList.remove('hide'); loadDash();
+};
+$('lcsv').onclick = () => csv(cur, recs); $('lprint').onclick = () => pr(cur, recs); $('lmail').onclick = () => mail(cur, recs);
+
+// ---- Reports ----
+async function data(s, r) {
+  const c = cinfo(s), pres = r.filter(x => x.status !== 'pending'), set = new Set(pres.map(x => x.matric_no.toUpperCase()));
+  const { data: st } = await sb.from('students').select('full_name,matric_no').eq('department_id', c.department_id).order('matric_no');
+  return { c, pres, abs: (st || []).filter(x => !set.has(x.matric_no.toUpperCase())) };
+}
+async function summary(s, r) { const { c, pres, abs } = await data(s, r); return `${inst}\n${c.departments?.name || ''}\n${c.code} ${c.title}\n${s.academic_session} ${s.semester} semester · ${new Date(s.created_at).toLocaleDateString()}\nTotal present: ${pres.length}\nTotal absent: ${abs.length}\n\n` + pres.map((x, i) => `${i + 1}. ${x.full_name} (${x.matric_no})`).join('\n'); }
+async function csv(s, r) {
+  const { c, pres, abs } = await data(s, r); if (!pres.length && !abs.length) return toast('No records to export');
+  const base = [inst, c.departments?.name, c.code + ' ' + c.title, s.academic_session, s.semester, new Date(s.created_at).toLocaleDateString()];
+  const rows = [['Institution', 'Department', 'Course', 'Session', 'Semester', 'Date', 'Name', 'Matric', 'Submitted', 'Status'], ...pres.map(x => [...base, x.full_name, x.matric_no, x.submitted_at, x.status]), ...abs.map(x => [...base, x.full_name, x.matric_no, '', 'absent'])];
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([rows.map(l => l.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(',')).join('\n')], { type: 'text/csv' })); a.download = `attendance-${s.code}.csv`; a.click();
+}
+async function pr(s, r) {
+  const w = window.open('', '_blank'); const { c, pres, abs } = await data(s, r);
+  if (!pres.length && !abs.length) { w.close(); return toast('No records to print'); }
+  const tb = (rows) => `<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;margin-bottom:18px"><tr><th>#</th><th>Name</th><th>Matric</th><th>Time</th></tr>${rows}</table>`;
+  w.document.write(`<title>Attendance register</title><body style="font-family:sans-serif;padding:28px"><h2>${esc(inst)}</h2><p>${esc(c.departments?.name)} · ${esc(c.code)} ${esc(c.title)} · ${esc(s.academic_session)} ${esc(s.semester)} semester · ${new Date(s.created_at).toLocaleDateString()}<br>Present: ${pres.length} · Absent: ${abs.length}</p><h3>Present</h3>${tb(pres.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.full_name)}</td><td>${esc(x.matric_no)}</td><td>${fmtT(x.submitted_at)}</td></tr>`).join(''))}<h3>Absent</h3>${tb(abs.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.full_name)}</td><td>${esc(x.matric_no)}</td><td></td></tr>`).join(''))}`);
+  w.document.close(); w.print();
+}
+const mail = async (s, r) => { location.href = 'mailto:?subject=' + encodeURIComponent('Attendance report ' + cinfo(s).code) + '&body=' + encodeURIComponent(await summary(s, r)); };
+
+// ---- History ----
+async function loadHist() {
+  const { data, error } = await sb.from('attendance_sessions').select('*,courses(id,department_id,code,title,level,departments(name))').order('created_at', { ascending: false });
+  if (error) return toast('Could not load history'); hist = data || []; drawHist();
+}
+function drawHist() {
+  const q = $('q').value.toLowerCase().trim();
+  const f = hist.filter(s => !q || [s.courses?.code, s.courses?.title, s.courses?.level, s.courses?.departments?.name, s.code, s.academic_session, new Date(s.created_at).toLocaleDateString()].join(' ').toLowerCase().includes(q));
+  $('hnone').classList.toggle('hide', f.length > 0);
+  $('hrows').innerHTML = f.map(s => `<tr><td>${new Date(s.created_at).toLocaleDateString()}</td><td>${esc(s.courses?.code)} ${esc(s.courses?.title)}</td><td>${esc(s.courses?.level)}</td><td>${esc(s.courses?.departments?.name)}</td><td><span class="pill ${s.status === 'active' ? '' : 'c'}">${s.status}</span></td><td><button class="btn alt" data-id="${s.id}">Open</button></td></tr>`).join('');
+  $('hrows').querySelectorAll('button').forEach(b => b.onclick = () => openRep(hist.find(s => s.id === b.dataset.id)));
+}
+$('q').oninput = drawHist;
+async function openRep(s) {
+  const { data, error } = await sb.from('attendance_records').select('*').eq('session_id', s.id).order('submitted_at');
+  if (error) return toast('Could not load report'); hs = s; hr = data || [];
+  $('rep').classList.remove('hide');
+  $('rTitle').textContent = `${s.courses.code} — ${s.courses.title}`;
+  $('rSub').textContent = `${s.courses.departments?.name} · ${s.academic_session} ${s.semester} semester · ${new Date(s.created_at).toLocaleDateString()} · ${hr.filter(x => x.status !== 'pending').length} present`;
+  $('rrows').innerHTML = hr.length ? hr.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.full_name)}</td><td>${esc(x.matric_no)}</td><td>${fmtT(x.submitted_at)}${x.checkin_class === 'late' ? ` <span class="pill late">Late +${x.late_minutes}m</span>` : ''}</td><td>${esc(x.status)}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">No submissions for this session.</td></tr>';
+  $('rep').scrollIntoView({ behavior: 'smooth' });
+}
+$('rcsv').onclick = () => csv(hs, hr); $('rprint').onclick = () => pr(hs, hr); $('rmail').onclick = () => mail(hs, hr);
+$('rwa').onclick = async () => { location.href = 'https://wa.me/?text=' + encodeURIComponent(await summary(hs, hr)); };
+// ===== Our Class Room: lecture management (late, verification, timetable, reports, settings) =====
+let cfg = {}, isAdmin = false, monS = null, monT = null, monCh = null, monBusy = false, ttEdit = null;
+const dayN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const nv = id => { const v = $(id).value.trim(); return v === '' ? null : +v; };
+const sv = id => { const v = $(id).value.trim(); return v === '' ? null : v; };
+const isoV = id => { const v = $(id).value; return v ? new Date(v).toISOString() : null; };
+const lcl = d => { const x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); };
+const fdt = d => d ? new Date(d).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+const rpc = async (n, a) => { const { data: d, error } = await sb.rpc(n, a); if (error) throw error; return d; };
+const safeCell = v => { v = String(v ?? ''); return /^[=+\-@\t\r]/.test(v) ? "'" + v : v; };
+function loadXLSX() { return window.XLSX ? Promise.resolve() : new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'; s.onload = ok; s.onerror = () => no(new Error('Could not load the Excel library. Check your connection.')); document.head.appendChild(s); }); }
+async function exportXlsx(name, rows, sheet) { await loadXLSX(); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows.map(r => r.map(c => typeof c === 'number' ? c : safeCell(c)))), sheet.slice(0, 30)); XLSX.writeFile(wb, name); }
+function printTable(title, sub, head, rows) {
+  const w = window.open('', '_blank'); if (!w) return toast('Allow pop-ups to print');
+  w.document.write(`<title>${esc(title)}</title><body style="font-family:sans-serif;padding:28px"><h2>${esc(inst)}</h2><h3>${esc(title)}</h3><p>${esc(sub)}</p><table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${rows.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`);
+  w.document.close(); w.print();
+}
+function geoHere(latId, lngId) {
+  if (!navigator.geolocation) return toast('Location is not supported on this device');
+  navigator.geolocation.getCurrentPosition(p => { $(latId).value = p.coords.latitude.toFixed(6); $(lngId).value = p.coords.longitude.toFixed(6); toast('Venue set to your location (±' + Math.round(p.coords.accuracy) + ' m)'); }, e => toast('Could not get location: ' + e.message), { enableHighAccuracy: true, timeout: 15000 });
+}
+
+function csel(id, ph) {
+  const el = $(id); el.classList.add('dd'); let items = [], val = '';
+  el.innerHTML = '<button type="button" class="dd-btn" aria-haspopup="listbox"><span></span></button><div class="dd-list" role="listbox"></div>';
+  const btn = el.firstChild, lab = btn.firstChild, list = el.lastChild;
+  const draw = () => { const it = items.find(i => i.value === val); lab.textContent = it ? it.label : ph; list.innerHTML = '';
+    if (!items.length) { const d = document.createElement('div'); d.className = 'dd-item'; d.style.color = 'var(--mut)'; d.textContent = 'No options available'; list.appendChild(d); }
+    items.forEach(i => { const d = document.createElement('div'); d.className = 'dd-item'; d.setAttribute('role', 'option'); if (i.value === val) { d.style.fontWeight = '700'; d.style.background = 'var(--soft)'; } d.textContent = i.label;
+      d.onclick = () => { val = i.value; draw(); el.classList.remove('open'); if (typeof el.onchange === 'function') el.onchange(); }; list.appendChild(d); }); };
+  btn.onclick = () => el.classList.toggle('open');
+  document.addEventListener('click', e => { if (!el.contains(e.target)) el.classList.remove('open'); });
+  el.addEventListener('keydown', e => { if (e.key === 'Escape') el.classList.remove('open'); });
+  Object.defineProperty(el, 'value', { get: () => val, set: v => { val = String(v ?? ''); draw(); } });
+  el.setItems = arr => { items = arr.map(x => ({ value: String(x.value), label: x.label })); if (!items.some(i => i.value === val)) val = items[0]?.value ?? ''; draw(); };
+  draw(); return el;
+}
+[['monSel', 'Choose a lecture'], ['ttCourse', 'Choose a course'], ['ttDay', 'Choose a day'], ['rpCourse', 'Choose a course'], ['rpPeriod', 'Choose a period'], ['rpSem', 'Choose a semester']].forEach(([i, p]) => csel(i, p));
+$('ttDay').setItems(dayN.map((d, i) => ({ value: i, label: d })));
+$('ttDay').value = '';   // no silent default: the admin must pick the day
+$('rpPeriod').setItems([{ value: 'week', label: 'This week' }, { value: 'lastweek', label: 'Last week' }, { value: 'month', label: 'This month' }, { value: 'lastmonth', label: 'Last month' }, { value: 'semester', label: 'Semester' }]);
+async function ocrInit(role) {
+  isAdmin = ['admin', 'super_admin', 'administrator'].includes(role);
+  try { cfg = await rpc('ocr_get_config'); } catch (e) { toast('Settings unavailable. Has the SQL migration been run? ' + e.message); }
+  document.querySelector('[data-t=cfg]').classList.toggle('hide', !isAdmin);
+  $('lsGrace').placeholder = 'Default ' + (cfg.default_grace_minutes ?? '') + ' min';
+  $('lsResp').placeholder = 'Default ' + (cfg.default_response_seconds ?? '') + ' sec';
+  $('lsRad').placeholder = 'Default ' + (cfg.default_venue_radius_m ?? '') + ' m';
+  $('lsRand').value = cfg.default_random_checks ?? '';
+  $('lsFinal').placeholder = 'e.g. ' + (cfg.default_final_check_minutes ?? '');
+  fillCourseSelects();
+}
+function fillCourseSelects() {
+  const it = courses.map(c => ({ value: c.id, label: `${c.code} — ${c.title}` }));
+  ['ttCourse', 'rpCourse'].forEach(i => $(i).setItems(it));
+}
+
+// ---- Start form helpers ----
+$('lsGeo').onclick = () => geoHere('lsLat', 'lsLng');
+$('lsFill').onclick = async () => {
+  const p = dd.get(); if (!p?.value) return toast('Choose a course first');
+  const { data: sc, error } = await sb.from('ocr_course_schedules').select('*').eq('course_id', p.value).eq('active', true);
+  if (error) return toast(error.message);
+  const today = new Date(), list = (sc || []).filter(x => x.day_of_week === today.getDay()); const x = list[0] || (sc || [])[0];
+  if (!x) return toast('No timetable entry for this course. Add one in the Timetable tab.');
+  const at = t => { const [h, m] = t.split(':'); const d = new Date(); d.setHours(+h, +m, 0, 0); return lcl(d); };
+  $('lsStart').value = at(x.start_time); $('lsEnd').value = at(x.end_time);
+  $('lsVenue').value = x.venue_name || ''; $('lsLat').value = x.venue_lat ?? ''; $('lsLng').value = x.venue_lng ?? ''; $('lsRad').value = x.venue_radius_m ?? '';
+  toast('Filled from timetable (' + dayN[x.day_of_week] + ')');
+};
+function sessionSettings() {
+  const o = {}, put = (k, v) => { if (v !== null && v !== undefined) o[k] = v; };
+  put('lecture_start_at', isoV('lsStart')); put('closing_at', isoV('lsClose')); put('lecture_end_at', isoV('lsEnd'));
+  put('grace_minutes', nv('lsGrace')); put('venue_name', sv('lsVenue')); put('venue_lat', nv('lsLat')); put('venue_lng', nv('lsLng'));
+  put('venue_radius_m', nv('lsRad')); put('response_seconds', nv('lsResp')); put('random_checks', nv('lsRand')); put('final_check_minutes', nv('lsFinal'));
+  return o;
+}
+async function applySettings(sessionId) {
+  const o = sessionSettings(); if (!Object.keys(o).length) return;
+  try { await rpc('ocr_set_session_settings', { p_session: sessionId, p_settings: o }); toast('Lecture settings saved'); }
+  catch (e) { toast('Session started, but settings failed: ' + e.message); }
+}
+
+// ---- Lecture monitor ----
+function resTxt(v) {
+  const d = v.distance_m != null ? ` (${Math.round(v.distance_m)} m from venue)` : '';
+  const m = { verified: '✓ Verified' + d, outside_venue: '⚠ Outside the venue' + d, location_unavailable: '⚠ Location unavailable (not treated as absent)', late_response: '⚠ Responded late', no_response: '⚠ No response', awaiting: '… Waiting for response' };
+  let t = m[v.result] || v.result;
+  if (v.review === 'cleared') t += ' · cleared by lecturer'; if (v.review === 'confirmed') t += ' · confirmed';
+  return t;
+}
+function tlHtml(r) {
+  const L = [`<li><b>${fmtT(r.checkin_at)}</b> Checked in ${r.class === 'late' ? `<span class="pill late">Late +${r.late_minutes} min</span>` : '<span class="pill">On time</span>'}${r.geo === 'inside' ? ' · at venue' : r.geo === 'outside' ? ' · <span class="bad">outside venue</span>' : r.geo === 'unavailable' ? ' · location unavailable' : ''}</li>`,
+    `<li>Initial verification: ${r.method === 'liveness' ? 'Live face check ✓' : 'Host review (' + esc(r.status) + ')'}</li>`];
+  r.verifications.forEach(v => {
+    const act = v.flagged && v.review !== 'cleared' && v.review !== 'confirmed' ? ` <button class="btn alt sm" data-rid="${v.response_id}" data-d="cleared">Clear</button> <button class="btn red sm" data-rid="${v.response_id}" data-d="confirmed">Confirm</button>` : '';
+    L.push(`<li><b>${v.opened_at ? fmtT(v.opened_at) : ''}</b> ${v.kind === 'final' ? 'Final check' : 'Mid-lecture check'}: ${esc(resTxt(v))}${v.responded_at ? ' · answered ' + fmtT(v.responded_at) : ''}${v.note ? `<br><small>${esc(v.note)}</small>` : ''}${act}</li>`);
+  });
+  return '<ul class="tl">' + L.join('') + '</ul>';
+}
+function monRender(t) {
+  const rs = t.records, ok = rs.filter(r => r.status !== 'pending');
+  const flagged = rs.filter(r => r.suspicious.length || r.early_departure);
+  $('mPres').textContent = ok.length; $('mLate').textContent = ok.filter(r => r.class === 'late').length;
+  $('mFlag').textContent = flagged.length; $('mEarly').textContent = rs.filter(r => r.early_departure).length;
+  const open = t.rounds.find(x => x.status === 'open');
+  $('mRound').innerHTML = open ? `Verification open until <b>${fmtT(open.closes_at)}</b>` : (t.scheduled ? `${t.scheduled} automatic check(s) scheduled` : 'No verification running');
+  $('vNow').disabled = $('vFinal').disabled = !!open;
+  const late = rs.filter(r => r.class === 'late');
+  $('mLateList').innerHTML = late.length ? late.map(r => `<span class="pill late" style="margin:3px">${esc(r.name)} · ${fmtT(r.checkin_at)} (+${r.late_minutes}m)</span>`).join('') : '<span class="empty" style="padding:6px">No late arrivals.</span>';
+  $('mNone').classList.toggle('hide', rs.length > 0);
+  $('mRows').innerHTML = rs.map(r => `<tr><td><b>${esc(r.name)}</b><br><small>${esc(r.matric)}</small></td><td>${tlHtml(r)}</td><td>${[...r.suspicious.map(x => `<span class="pill late">${esc(x)}</span>`), r.early_departure ? '<span class="pill red">Possible early departure</span>' : ''].join('<br>') || '—'}</td></tr>`).join('');
+}
+async function monRefresh() {
+  if (!monS || monBusy) return; monBusy = true;
+  try { monRender(await rpc('ocr_session_timeline', { p_session: monS })); } catch (e) { $('mRound').textContent = e.message; }
+  monBusy = false;
+}
+async function monLoadList() {
+  const { data: d } = await sb.from('attendance_sessions').select('id,code,created_at,courses(code,title)').order('created_at', { ascending: false }).limit(40);
+  const prev = monS; $('monSel').setItems((d || []).map(s => ({ value: s.id, label: `${s.courses?.code || ''} · ${fdt(s.created_at)} · ${s.code}` })));
+  if (prev && (d || []).some(s => s.id === prev)) $('monSel').value = prev; monS = $('monSel').value || null;
+  monRefresh();
+}
+function monStart() {
+  monLoadList(); clearInterval(monT); monT = setInterval(monRefresh, 8000);
+  if (monCh) sb.removeChannel(monCh);
+  let dbn; const kick = () => { clearTimeout(dbn); dbn = setTimeout(monRefresh, 400); };
+  monCh = sb.channel('ocr-mon').on('postgres_changes', { event: '*', schema: 'public', table: 'ocr_verification_responses' }, kick).on('postgres_changes', { event: '*', schema: 'public', table: 'attendance_records' }, kick).subscribe();
+}
+function monStop() { clearInterval(monT); if (monCh) { sb.removeChannel(monCh); monCh = null; } }
+$('monSel').onchange = () => { monS = $('monSel').value; monRefresh(); };
+const trig = kind => async () => { if (!monS) return toast('Choose a lecture'); try { await rpc('ocr_trigger_verification', { p_session: monS, p_kind: kind, p_response_seconds: nv('vSecs') }); toast('Verification request sent to students'); monRefresh(); } catch (e) { toast(e.message); } };
+$('vNow').onclick = trig('mid'); $('vFinal').onclick = trig('final');
+$('mRows').onclick = async e => {
+  const b = e.target.closest('button[data-rid]'); if (!b) return;
+  const note = prompt(b.dataset.d === 'cleared' ? 'Optional note (e.g. phone battery died)' : 'Optional note'); if (note === null) return;
+  try { await rpc('ocr_review_response', { p_response: b.dataset.rid, p_decision: b.dataset.d, p_note: note || null }); monRefresh(); } catch (er) { toast(er.message); }
+};
+$('openMon').onclick = () => { monS = cur.id; document.querySelector('[data-t=mon]').click(); };
+$('rmon').onclick = () => { monS = hs.id; document.querySelector('[data-t=mon]').click(); };
+$('mCsv').onclick = async () => {
+  if (!monS) return; const t = await rpc('ocr_session_timeline', { p_session: monS });
+  const rows = [['Name', 'Matric', 'Check-in', 'Class', 'Minutes late', 'Venue at check-in', 'Verifications', 'Flags'], ...t.records.map(r => [r.name, r.matric, r.checkin_at, r.class, r.late_minutes ?? '', r.geo ?? '', r.verifications.map(v => v.kind + ':' + v.result + (v.review !== 'none' ? '/' + v.review : '')).join('; '), [...r.suspicious, r.early_departure ? 'early departure' : ''].filter(Boolean).join('; ')])];
+  await exportXlsx('attendance-timeline.xlsx', rows, 'Timeline');
+};
+
+// ---- Timetable ----
+async function ttLoad() {
+  fillCourseSelects(); const ids = courses.map(c => c.id);
+  if (!ids.length) { $('ttList').innerHTML = '<div class="empty">Add a course first.</div>'; return; }
+  const { data: sc, error } = await sb.from('ocr_course_schedules').select('*').in('course_id', ids).order('day_of_week').order('start_time');
+  if (error) return toast(error.message);
+  $('ttList').innerHTML = (sc || []).length ? '<table>' + sc.map(x => { const c = courses.find(k => k.id === x.course_id) || {}; return `<tr><td><b>${esc(c.code)}</b></td><td>${dayN[x.day_of_week]}</td><td>${x.start_time.slice(0, 5)}–${x.end_time.slice(0, 5)}</td><td>${esc(x.venue_name || '')}</td><td><button class="btn alt sm" data-e='${esc(JSON.stringify(x))}'>Edit</button> <button class="btn red sm" data-x="${x.id}">Delete</button></td></tr>`; }).join('') + '</table>' : '<div class="empty">No lecture times yet.</div>';
+}
+function ttReset() { ttEdit = null; $('ttDay').value = ''; ['ttStart', 'ttEnd', 'ttVenue', 'ttLat', 'ttLng', 'ttRad', 'ttFrom', 'ttTo'].forEach(i => $(i).value = ''); $('ttSave').textContent = 'Save lecture time'; }
+$('ttGeo').onclick = () => geoHere('ttLat', 'ttLng');
+$('ttSave').onclick = async () => {
+  if (!$('ttCourse').value) return toast('Choose a course');
+  if ($('ttDay').value === '') return toast('Choose a day');
+  if (!$('ttStart').value || !$('ttEnd').value) return toast('Set the start and end time');
+  if ($('ttEnd').value <= $('ttStart').value) return toast('End time must be after the start time');
+  const dayName = dayN[+$('ttDay').value];
+  try {
+    await rpc('ocr_save_schedule', { p_course: $('ttCourse').value, p_id: ttEdit, p_data: { day_of_week: +$('ttDay').value, start_time: $('ttStart').value, end_time: $('ttEnd').value, venue_name: sv('ttVenue'), venue_lat: nv('ttLat'), venue_lng: nv('ttLng'), venue_radius_m: nv('ttRad'), valid_from: sv('ttFrom'), valid_to: sv('ttTo'), active: true } });
+    toast(ttEdit ? 'Updated (' + dayName + '). Students following this course will see the change.' : 'Lecture time added for ' + dayName); ttReset(); ttLoad();
+  } catch (e) { toast(e.message); }
+};
+$('ttList').onclick = async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.x) { if (!confirm('Delete this lecture time? Students will be notified.')) return; try { await rpc('ocr_delete_schedule', { p_id: b.dataset.x }); ttLoad(); } catch (er) { toast(er.message); } }
+  if (b.dataset.e) { const x = JSON.parse(b.dataset.e); ttEdit = x.id; $('ttCourse').value = x.course_id; $('ttDay').value = x.day_of_week; $('ttStart').value = x.start_time.slice(0, 5); $('ttEnd').value = x.end_time.slice(0, 5); $('ttVenue').value = x.venue_name || ''; $('ttLat').value = x.venue_lat ?? ''; $('ttLng').value = x.venue_lng ?? ''; $('ttRad').value = x.venue_radius_m ?? ''; $('ttFrom').value = x.valid_from || ''; $('ttTo').value = x.valid_to || ''; $('ttSave').textContent = 'Update lecture time'; $('ttSave').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+};
+
+// ---- Course reports ----
+function periodRange(k) {
+  const n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate()), dow = (d0.getDay() + 6) % 7;
+  const wk = new Date(d0); wk.setDate(wk.getDate() - dow);
+  if (k === 'week') { const b = new Date(wk); b.setDate(b.getDate() + 7); return [wk, b, 'This week']; }
+  if (k === 'lastweek') { const a = new Date(wk); a.setDate(a.getDate() - 7); return [a, wk, 'Last week']; }
+  if (k === 'month') return [new Date(n.getFullYear(), n.getMonth(), 1), new Date(n.getFullYear(), n.getMonth() + 1, 1), 'This month'];
+  return [new Date(n.getFullYear(), n.getMonth() - 1, 1), new Date(n.getFullYear(), n.getMonth(), 1), 'Last month'];
+}
+async function rpSemLoad() {
+  const id = $('rpCourse').value; if (!id) return;
+  const { data: d } = await sb.from('attendance_sessions').select('academic_session,semester').eq('course_id', id);
+  const u = [...new Map((d || []).map(x => [x.academic_session + '|' + x.semester, x])).values()];
+  $('rpSem').setItems(u.map(x => ({ value: x.academic_session + '|' + x.semester, label: `${x.academic_session} · ${x.semester} semester` })));
+}
+$('rpCourse').onchange = rpSemLoad; $('rpPeriod').onchange = () => $('rpSemWrap').classList.toggle('hide', $('rpPeriod').value !== 'semester');
+let rpData = null;
+$('rpRun').onclick = async () => {
+  const id = $('rpCourse').value; if (!id) return toast('Choose a course');
+  const k = $('rpPeriod').value, args = { p_course: id }; let label;
+  if (k === 'semester') { const v = $('rpSem').value; if (!v) return toast('No semester found'); const [a, s] = v.split('|'); args.p_acad = a; args.p_sem = s; label = a + ' ' + s + ' semester'; }
+  else { const [a, b, l] = periodRange(k); args.p_from = a.toISOString(); args.p_to = b.toISOString(); label = l + ' (' + a.toLocaleDateString() + ' – ' + new Date(b - 864e5).toLocaleDateString() + ')'; }
+  try { const r = await rpc('ocr_course_report', args); const c = courses.find(x => x.id === id) || {}; rpData = { c, label, r }; rpDraw(); } catch (e) { toast(e.message); }
+};
+function rpDraw() {
+  const { c, label, r } = rpData; $('rpOut').classList.remove('hide');
+  $('rpTitle').textContent = `${c.code} — ${c.title}`; $('rpSub').textContent = `${label} · ${r.held} lecture(s) held`;
+  $('rpRows').innerHTML = r.rows.length ? r.rows.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.name)}</td><td>${esc(x.matric)}</td><td>${x.present}</td><td>${x.late}</td><td>${x.absent}</td><td>${x.early_flags}</td><td><b>${x.percent}%</b></td></tr>`).join('') : '<tr><td colspan="8" class="empty">No students or sessions in this period.</td></tr>';
+}
+const rpHead = ['#', 'Name', 'Matric', 'Present', 'Late', 'Absent', 'Early-departure flags', 'Attendance %'];
+const rpBody = () => rpData.r.rows.map((x, i) => [i + 1, x.name, x.matric, x.present, x.late, x.absent, x.early_flags, x.percent + '%']);
+$('rpPdf').onclick = () => rpData && printTable(`${rpData.c.code} ${rpData.c.title}: attendance report`, `${rpData.label} · ${rpData.r.held} lecture(s) held`, rpHead, rpBody());
+$('rpXls').onclick = () => rpData && exportXlsx(`attendance-${rpData.c.code}.xlsx`, [[inst], [`${rpData.c.code} ${rpData.c.title}`], [rpData.label, 'Lectures held: ' + rpData.r.held], [], rpHead, ...rpBody()], 'Report').catch(e => toast(e.message));
+
+// ---- Admin settings ----
+async function cfgLoad() {
+  const { data: d, error } = await sb.from('ocr_config').select('*').order('key'); if (error) return toast(error.message);
+  $('cfgRows').innerHTML = (d || []).map(x => `<tr><td><b>${esc(x.key)}</b><br><small>${esc(x.description || '')}</small></td><td style="min-width:140px"><input data-k="${esc(x.key)}" value='${esc(JSON.stringify(x.value))}'></td><td><button class="btn alt sm" data-k="${esc(x.key)}">Save</button></td></tr>`).join('');
+}
+$('cfgRows').onclick = async e => {
+  const b = e.target.closest('button'); if (!b) return; const inp = $('cfgRows').querySelector(`input[data-k="${b.dataset.k}"]`);
+  let v; try { v = JSON.parse(inp.value); } catch { return toast('Value must be valid JSON, e.g. 10 or [5,15]'); }
+  try { await rpc('ocr_set_config', { p_key: b.dataset.k, p_value: v }); toast('Saved'); cfg[b.dataset.k] = v; } catch (er) { toast(er.message); }
+};
+
+// tab routing for the new sections
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  const t = b.dataset.t; monStop();
+  if (t === 'mon') monStart(); if (t === 'tt') ttLoad(); if (t === 'rp') { fillCourseSelects(); rpSemLoad(); } if (t === 'cfg') cfgLoad(); if (t === 'ai') aiInit(); if (t === 'sec') secLoad();
+}));
+
+// ---- Class Room AI v2 (chat, workspace, goals, alerts, memory) ----
+/*ZIP-BEGIN*/
+const AXCRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const axCrc = b => { let c = ~0; for (let i = 0; i < b.length; i++) c = AXCRC[(c ^ b[i]) & 255] ^ (c >>> 8); return ~c >>> 0; };
+function axZip(files) { // files: [{path, content}] → Uint8Array (store method, UTF-8 names)
+  const enc = new TextEncoder(), parts = [], cen = []; let off = 0, d = new Date();
+  const u16 = n => [n & 255, (n >> 8) & 255], u32 = n => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+  const tm = u16((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)), dt = u16(((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate());
+  for (const f of files) {
+    const name = enc.encode(f.path), data = enc.encode(f.content), crc = u32(axCrc(data)), len = u32(data.length);
+    parts.push(new Uint8Array([0x50, 0x4b, 3, 4, 20, 0, 0, 8, 0, 0, ...tm, ...dt, ...crc, ...len, ...len, ...u16(name.length), 0, 0]), name, data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, 20, 0, 20, 0, 0, 8, 0, 0, ...tm, ...dt, ...crc, ...len, ...len, ...u16(name.length), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...u32(off)]), name);
+    off += 30 + name.length + data.length;
+  }
+  const cs = cen.reduce((a, x) => a + x.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, 0, 0, 0, 0, ...u16(files.length), ...u16(files.length), ...u32(cs), ...u32(off), 0, 0]);
+  const all = [...parts, ...cen, end], out = new Uint8Array(all.reduce((a, x) => a + x.length, 0)); let p = 0; for (const x of all) { out.set(x, p); p += x.length; } return out;
+}
+async function axUnzip(buf) { // → [{path, bytes}] (skips folders, encrypted, >200 KB, unsupported methods)
+  const v = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder(); let e = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break; }
+  if (e < 0) throw new Error('That is not a valid zip file');
+  const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const out = [];
+  for (let k = 0; k < n && k < 2000 && out.length < 400; k++) {
+    if (v.getUint32(p, true) !== 0x02014b50) break;
+    const flags = v.getUint16(p + 8, true), meth = v.getUint16(p + 10, true), cs = v.getUint32(p + 20, true), us = v.getUint32(p + 24, true), nl = v.getUint16(p + 28, true), el = v.getUint16(p + 30, true), cl = v.getUint16(p + 32, true), lo = v.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + el + cl;
+    if (name.endsWith('/') || us > 200000 || (flags & 1)) continue;
+    const ds = lo + 30 + v.getUint16(lo + 26, true) + v.getUint16(lo + 28, true), raw = u8.subarray(ds, ds + cs); let data = null;
+    if (meth === 0) data = raw;
+    else if (meth === 8) { const rd = new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader(), ch = []; let tot = 0; for (;;) { const { done, value } = await rd.read(); if (done) break; tot += value.length; if (tot > 200000) { await rd.cancel(); ch.length = 0; tot = -1; break; } ch.push(value); } if (tot >= 0) { data = new Uint8Array(tot); let q = 0; for (const c of ch) { data.set(c, q); q += c.length; } } }
+    if (data && data.length <= 200000) out.push({ path: name, bytes: data });
+  }
+  return out;
+}
+/*ZIP-END*/
+
+const AX = { cid: null, img: null, busy: false, ready: false, caps: null, set: { memory_enabled: true, proactive_enabled: true, monitoring_enabled: false }, scope: '', projects: [], files: [], last: '', tab: 'chat', modal: null };
+const axSug = ['Which courses do I have?', 'Who is below 75% in my course this month?', 'Summarise last week’s attendance for a course', 'Write a Python script that turns an attendance CSV into a per-student summary'];
+async function ai(action, body = {}) {
+  const { data, error } = await sb.functions.invoke('ai-chat', { body: { action, ...body } });
+  if (error || data?.error) { let m = data?.error || error?.message || 'Request failed'; try { const j = await error?.context?.json(); m = j?.error || m; } catch { } throw new Error(m); }
+  return data;
+}
+const axTry = async (f) => { try { return await f(); } catch (e) { toast(e.message); } };
+const axSize = n => n < 1024 ? n + ' B' : (n / 1024).toFixed(1) + ' KB';
+const axDate = d => d ? fdt(d) : 'never';
+const axHash = /^(py|python|sh|bash|shell|yaml|yml|rb|ruby|toml|r)$/i;
+const AXKW = 'function|const|let|var|return|if|else|elif|for|while|class|import|from|export|def|print|in|not|and|or|is|None|True|False|true|false|null|undefined|new|async|await|try|catch|except|finally|throw|raise|public|private|static|void|int|float|string|bool|struct|select|insert|update|delete|create|table|where|join|as|with|lambda|yield|switch|case|break|continue|default|extends|implements|interface|enum|package|using|fn|mut|match|pub|use';
+const AXRE = [0, 1].map(h => new RegExp('(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/|--[^\\n]*' + (h ? '|#[^\\n]*' : '') + ')|("(?:\\\\.|[^"\\\\\\n])*"|\'(?:\\\\.|[^\'\\\\\\n])*\'|`(?:\\\\.|[^`\\\\])*`)|\\b(\\d+(?:\\.\\d+)?)\\b|\\b(' + AXKW + ')\\b', 'g'));
+function hl(code, lang) { // escape first, so file contents can never inject HTML
+  const re = AXRE[axHash.test(lang || '') ? 1 : 0]; re.lastIndex = 0; let out = '', last = 0, m;
+  while ((m = re.exec(code))) { out += esc(code.slice(last, m.index)); out += `<span class="${m[1] ? 'tk-c' : m[2] ? 'tk-s' : m[3] ? 'tk-n' : 'tk-k'}">${esc(m[0])}</span>`; last = m.index + m[0].length; if (!m[0].length) re.lastIndex++; }
+  return out + esc(code.slice(last));
+}
+const axInl = s => esc(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
+function md(t) { const p = String(t).split(/```(\w*)\n?([\s\S]*?)```/g); let o = ''; for (let i = 0; i < p.length; i += 3) { o += axInl(p[i]); if (i + 2 < p.length) o += `<pre class="ax-code"><code>${hl(p[i + 2], p[i + 1])}</code></pre>`; } return o; }
+
+function axPlan(plan, log) {
+  const d = document.createElement('div'); d.className = 'ax-plan';
+  d.innerHTML = '<b>Plan</b><ul>' + plan.map(s => `<li class="${esc(s.status)}">${esc(s.title)}</li>`).join('') + '</ul>' + (log?.length ? `<details><summary>Activity log (${log.length})</summary>${log.map(l => `<div class="${l.ok ? '' : 'bad'}">${esc(l.tool)} — ${esc(l.note)}</div>`).join('')}</details>` : ''); return d;
+}
+function axFileCards(files) {
+  const d = document.createElement('div'); d.className = 'ax-grid'; d.style.marginTop = '0';
+  files.forEach(f => { const c = document.createElement('div'); c.className = 'ax-file'; c.innerHTML = `<b>${esc(f.path)}</b><span class="ax-m">${esc(f.language || '')} · ${axSize(f.size)}${f.version > 1 ? ' · v' + f.version : ''}</span><span class="ax-sp"></span><button class="btn alt sm" data-fv="${esc(f.id)}">Preview</button><button class="btn sm" data-fd="${esc(f.id)}">Download</button>`; d.appendChild(c); }); return d;
+}
+function axSources(src) {
+  const d = document.createElement('div'); d.className = 'ax-src'; d.append('Sources: ');
+  src.forEach(s => { if (!String(s.url).startsWith('https://')) return; const a = document.createElement('a'); a.href = s.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = s.title || new URL(s.url).hostname; d.appendChild(a); }); return d;
+}
+function aiAdd(role, text, meta) {
+  const d = document.createElement('div'); d.className = 'ai-m ' + role; const col = document.createElement('div'); col.className = 'ax-col';
+  const b = document.createElement('div'); b.className = 'ai-b'; if (role === 'assistant') b.innerHTML = md(text); else b.textContent = text; col.appendChild(b);
+  if (meta?.plan?.length) col.appendChild(axPlan(meta.plan, meta.log)); if (meta?.files?.length) col.appendChild(axFileCards(meta.files)); if (meta?.sources?.length) col.appendChild(axSources(meta.sources));
+  if (role === 'assistant' && text !== 'Thinking…') { const c = document.createElement('button'); c.className = 'btn alt sm'; c.style.alignSelf = 'flex-start'; c.textContent = 'Copy'; c.onclick = () => copyText(text, 'Copied'); col.appendChild(c); }
+  if (role === 'err') { const r = document.createElement('button'); r.className = 'btn alt sm'; r.style.alignSelf = 'flex-start'; r.textContent = 'Retry'; r.onclick = () => { d.remove(); aiSend(AX.last); }; col.appendChild(r); }
+  d.appendChild(col); $('aiLog').appendChild(d); $('aiLog').scrollTop = 1e9; return d;
+}
+function axBusy(b) { AX.busy = b; $('aiGo').disabled = b; }
+function axImgClear() { AX.img = null; $('axImgName').textContent = ''; $('axImg').value = ''; }
+function axPending(items, runId) {
+  const box = $('axPend'); box.innerHTML = '';
+  if (!items?.length) return;
+  const d = document.createElement('div'); d.className = 'ax-pend'; d.innerHTML = '<b>Approval needed</b><p class="ax-hint">The AI paused before doing this. Untick anything you do not want done.</p>' + items.map(i => `<label><input type="checkbox" checked data-pid="${esc(i.id)}"><span>${esc(i.summary)}</span></label>`).join('') + '<div class="ax-bar"><button class="btn sm" id="axGoOn">Continue</button><button class="btn alt sm" id="axNoAll">Decline all</button></div>';
+  box.appendChild(d);
+  const go = async all => {
+    const dec = {}; d.querySelectorAll('input[data-pid]').forEach(x => dec[x.dataset.pid] = all === false ? false : x.checked); box.innerHTML = ''; axBusy(true); const w = aiAdd('assistant', 'Working…');
+    try { axHandle(await ai('agent.respond', { run_id: runId, decisions: dec })); } catch (e) { aiAdd('err', e.message); } w.remove(); axBusy(false);
+  };
+  $('axGoOn').onclick = () => go(); $('axNoAll').onclick = () => go(false);
+}
+function axHandle(d) {
+  AX.cid = d.conversation_id; const meta = { plan: d.run?.plan, log: d.run?.log, files: d.files, sources: d.sources };
+  if (d.reply) aiAdd('assistant', d.reply, meta); else if (d.status === 'awaiting_approval') aiAdd('assistant', 'I need your approval before I continue.', meta);
+  axPending(d.status === 'awaiting_approval' ? d.pending : [], d.run?.id);
+  $('axNudge').innerHTML = ''; (d.nudges || []).forEach(n => { const b = document.createElement('button'); b.className = 'btn alt sm'; b.textContent = n.text; b.onclick = () => { b.remove(); axTab(n.action === 'goals' ? 'goals' : 'watch'); }; $('axNudge').appendChild(b); });
+  aiList();
+}
+async function aiSend(t) {
+  t = (t || '').trim(); const img = AX.img; if ((!t && !img) || AX.busy) return;
+  AX.last = t; $('aiQ').value = ''; $('aiSug').classList.add('hide'); $('axNudge').innerHTML = ''; aiAdd('user', (t || 'Please explain this image.') + (img ? '  [image attached]' : ''));
+  const w = aiAdd('assistant', 'Thinking…'); axBusy(true);
+  try { const d = await ai('chat', { message: t, conversation_id: AX.cid, project_id: AX.cid ? undefined : ($('axProj').value || undefined), agent: $('axAgent').checked && !img, image: img }); w.remove(); axImgClear(); axHandle(d); }
+  catch (e) { w.remove(); aiAdd('err', e.message); }
+  axBusy(false);
+}
+async function aiList(q) {
+  const box = $('aiHist'); box.innerHTML = '';
+  try {
+    if (q) {
+      const r = await ai('conversations.search', { q }); if (!r.results.length) box.innerHTML = '<p class="ax-m">No matching chats.</p>';
+      r.results.forEach(x => axConvBtn(box, { id: x.conversation_id, title: x.title }, x.snippet)); return;
+    }
+    (await ai('conversations.list')).conversations.forEach(c => axConvBtn(box, c));
+  } catch (e) { box.innerHTML = `<p class="ax-m">${esc(e.message)}</p>`; }
+}
+function axConvBtn(box, c, snip) {
+  const b = document.createElement('button'); b.className = c.id === AX.cid ? 'on' : ''; const s = document.createElement('span'); s.textContent = c.title || 'Chat';
+  if (snip) { const n = document.createElement('small'); n.className = 'ax-snip'; n.textContent = snip.slice(0, 90); s.appendChild(n); }
+  const ed = document.createElement('span'); ed.textContent = '✎'; ed.title = 'Rename'; const x = document.createElement('span'); x.textContent = '×'; x.title = 'Delete'; const act = document.createElement('span'); act.append(ed, ' ', x); b.append(s, act);
+  b.onclick = async e => {
+    if (e.target === x) { if (!confirm('Delete this conversation and its messages?')) return; await axTry(() => ai('conversations.delete', { id: c.id })); if (AX.cid === c.id) aiNew(); return aiList($('axSearch').value.trim()); }
+    if (e.target === ed) { const t = prompt('Rename conversation', c.title || ''); if (t && t.trim()) { await axTry(() => ai('conversations.rename', { id: c.id, title: t })); aiList($('axSearch').value.trim()); } return; }
+    axTab('chat'); await axTry(async () => {
+      const r = await ai('conversations.get', { id: c.id }); AX.cid = c.id; $('aiLog').innerHTML = ''; $('aiSug').classList.add('hide'); $('axNudge').innerHTML = '';
+      r.messages.forEach(m => aiAdd(m.role, m.content, m.meta)); axPending(r.pending?.items, r.pending?.run_id); aiList($('axSearch').value.trim());
+    });
+  };
+  box.appendChild(b);
+}
+function aiNew() { AX.cid = null; $('aiLog').innerHTML = ''; $('axPend').innerHTML = ''; $('axNudge').innerHTML = ''; $('aiSug').classList.remove('hide'); axTab('chat'); }
+async function axPick(f) {
+  if (!f) return; if (!/^image\/(jpeg|png|webp)$/.test(f.type)) return toast('Use a JPEG, PNG or WebP image.');
+  try {
+    const bm = await createImageBitmap(f), k = Math.min(1, 1280 / Math.max(bm.width, bm.height)), cv = document.createElement('canvas'); cv.width = Math.round(bm.width * k); cv.height = Math.round(bm.height * k); cv.getContext('2d').drawImage(bm, 0, 0, cv.width, cv.height);
+    const u = cv.toDataURL('image/jpeg', .82); if (u.length > 4.2e6) return toast('That image is still too large. Try a smaller one.'); AX.img = u; $('axImgName').textContent = f.name.slice(0, 30);
+  } catch { toast('Could not read that image.'); }
+}
+
+// ----- file download / preview / zip
+function axSave(name, blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name.split('/').pop(); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+async function axFileGet(id) { return (await ai('files.get', { id })).file; }
+async function axDownload(id) { await axTry(async () => { const f = await axFileGet(id); axSave(f.path, new Blob([f.content], { type: 'text/plain;charset=utf-8' })); }); }
+async function axPreview(id) {
+  await axTry(async () => {
+    const f = await axFileGet(id); AX.modal = f; $('axMT').textContent = f.path; $('axMV').innerHTML = `<code>${hl(f.content, f.language)}</code>`; $('axMV').classList.remove('hide'); $('axME').classList.add('hide'); $('axMSave').classList.add('hide'); $('axMEdit').classList.remove('hide'); $('axModal').classList.remove('hide');
+  });
+}
+async function axZipAll(pid) {
+  await axTry(async () => {
+    const list = (await ai('files.list', { project_id: pid || undefined })).files; if (!list.length) return toast('No files to download.');
+    const files = []; for (const f of list) files.push(await axFileGet(f.id)); const name = (pid ? (AX.projects.find(p => p.id === pid)?.name || 'project') : 'workspace').replace(/[^\w.-]+/g, '_');
+    axSave(name + '.zip', new Blob([axZip(files)], { type: 'application/zip' }));
+  });
+}
+async function axUpload(fileList, pid) {
+  const found = [];
+  for (const f of fileList) {
+    if (/\.zip$/i.test(f.name)) { try { for (const z of await axUnzip(await f.arrayBuffer())) found.push(z); } catch (e) { toast(e.message); } }
+    else if (f.size <= 200000) found.push({ path: f.webkitRelativePath || f.name, bytes: new Uint8Array(await f.arrayBuffer()) });
+  }
+  const good = [], bad = []; const dec = new TextDecoder('utf-8', { fatal: true });
+  for (const x of found) {
+    const p = x.path.replace(/\\/g, '/').replace(/^\/+/, '');
+    if (/(^|\/)(node_modules|\.git|__pycache__|dist|build)\//.test(p) || /(^|\/)\.DS_Store$/.test(p) || p.split('/').includes('..')) { continue; }
+    try { if (x.bytes.subarray(0, 8000).includes(0)) throw 0; good.push({ path: p, content: dec.decode(x.bytes) }); } catch { bad.push(p); }
+  }
+  if (!good.length) return toast(bad.length ? 'Only text files can be added (skipped ' + bad.length + ').' : 'No usable files found.');
+  let saved = 0, skipped = bad.length; let batch = [], size = 0;
+  const flush = async () => { if (!batch.length) return; const r = await ai('files.save', { project_id: pid || undefined, files: batch }); saved += r.saved.length; skipped += r.skipped.length; batch = []; size = 0; };
+  await axTry(async () => { for (const g of good) { if (size + g.content.length > 1_200_000 || batch.length >= 100) await flush(); batch.push(g); size += g.content.length; } await flush(); toast(`Added ${saved} file(s)` + (skipped ? `, skipped ${skipped}` : '')); });
+  axFilesLoad();
+}
+
+// ----- tabs
+function axTab(n) {
+  AX.tab = n; document.querySelectorAll('#axSub button').forEach(b => b.classList.toggle('on', b.dataset.ax === n));
+  ['chat', 'files', 'goals', 'watch', 'mem'].forEach(k => $('ax-' + k).classList.toggle('hide', k !== n));
+  if (n === 'files') axFilesLoad(); if (n === 'goals') axGoalsLoad(); if (n === 'watch') axWatchLoad(); if (n === 'mem') axMemLoad();
+}
+async function axProjects() { try { AX.projects = (await ai('projects.list')).projects; } catch { AX.projects = []; } const cur = $('axProj').value; $('axProj').innerHTML = '<option value="">No project</option>' + AX.projects.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join(''); $('axProj').value = AX.projects.some(p => p.id === cur) ? cur : ''; }
+const axScopeSel = () => `<select id="axScope"><option value="">Personal workspace</option>${AX.projects.map(p => `<option value="${esc(p.id)}" ${p.id === AX.scope ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>`;
+
+async function axFilesLoad() {
+  const box = $('ax-files'); await axProjects(); if (!AX.projects.some(p => p.id === AX.scope)) AX.scope = '';
+  let files = []; try { files = (await ai('files.list', { project_id: AX.scope || undefined })).files; } catch (e) { toast(e.message); }
+  const pr = AX.projects.find(p => p.id === AX.scope);
+  box.innerHTML = `<h3>Files &amp; projects</h3><p class="ax-hint">Files the AI creates for you appear here and in chat. Upload an existing project (files or a .zip) and ask the AI to review or change it. Only text files up to 200 KB are accepted.</p>
+  <div class="ax-bar">${axScopeSel()}<button class="btn alt sm" id="axPNew">New project</button>${pr ? '<button class="btn alt sm" id="axPEdit">Edit project</button><button class="btn alt sm" id="axPChat">Chat in this project</button><button class="btn alt sm" id="axPDel">Delete project</button>' : ''}</div>
+  ${pr ? `<p class="ax-hint"><b>Instructions:</b> ${esc(pr.instructions || 'none')}</p>` : ''}
+  <div class="ax-grid" id="axFL">${files.length ? files.map(f => `<div class="ax-file"><b>${esc(f.path)}</b><span class="ax-m">${esc(f.language || '')} · ${axSize(f.size)} · v${f.version}</span><span class="ax-sp"></span><button class="btn alt sm" data-fv="${esc(f.id)}">Preview</button><button class="btn alt sm" data-fd="${esc(f.id)}">Download</button><button class="btn alt sm" data-fx="${esc(f.id)}">Delete</button></div>`).join('') : '<p class="ax-m">No files here yet.</p>'}</div>
+  <div class="ax-bar"><label class="btn alt sm" for="axUp">Upload files or .zip</label><input type="file" id="axUp" multiple class="hide"><button class="btn alt sm" id="axNF">New file</button><button class="btn sm" id="axZipB" ${files.length ? '' : 'disabled'}>Download all (ZIP)</button></div>`;
+  $('axScope').onchange = e => { AX.scope = e.target.value; axFilesLoad(); };
+  $('axPNew').onclick = () => axTry(async () => { const name = prompt('Project name'); if (!name) return; const ins = prompt('Instructions for the AI in this project (optional)', '') || ''; const r = await ai('projects.create', { name, instructions: ins }); AX.scope = r.project.id; axFilesLoad(); });
+  if (pr) {
+    $('axPEdit').onclick = () => axTry(async () => { const name = prompt('Project name', pr.name); if (!name) return; const ins = prompt('Instructions for the AI', pr.instructions || ''); await ai('projects.update', { id: pr.id, name, instructions: ins ?? pr.instructions }); axFilesLoad(); });
+    $('axPChat').onclick = () => { aiNew(); $('axProj').value = pr.id; toast('New chats will use “' + pr.name + '”'); };
+    $('axPDel').onclick = () => axTry(async () => { if (!confirm('Delete this project and ALL its files and project memories? Chats are kept.')) return; await ai('projects.delete', { id: pr.id }); AX.scope = ''; axFilesLoad(); });
+  }
+  $('axUp').onchange = e => { const l = [...e.target.files]; e.target.value = ''; if (l.length) axUpload(l, AX.scope); };
+  $('axNF').onclick = () => { const p = prompt('File path, e.g. src/app.py'); if (!p) return; AX.modal = { id: null, path: p.trim(), language: '', content: '', project_id: AX.scope || null }; $('axMT').textContent = p; $('axME').value = ''; axModalEdit(true); $('axModal').classList.remove('hide'); };
+  $('axZipB').onclick = () => axZipAll(AX.scope);
+}
+function axModalEdit(on) { $('axMV').classList.toggle('hide', on); $('axME').classList.toggle('hide', !on); $('axMSave').classList.toggle('hide', !on); $('axMEdit').classList.toggle('hide', on); if (on) { $('axME').value = AX.modal.content; $('axME').focus(); } }
+
+// ----- goals
+async function axGoalsLoad() {
+  const box = $('ax-goals'); let gs = [], sm = null;
+  try { gs = (await ai('goals.list')).goals; sm = await ai('goals.summary'); } catch (e) { toast(e.message); }
+  box.innerHTML = `<h3>Goals</h3><p class="ax-hint">Track long-term goals and milestones. You can also ask the AI in chat to create one or log progress.</p>
+  ${sm ? `<div class="ax-bar"><span class="pill">${sm.active} active</span><span class="pill c">${sm.paused} paused</span><span class="pill c">${sm.done} done</span>${sm.attention.length ? `<span class="pill late">${sm.attention.length} need attention</span>` : ''}</div>` : ''}
+  <div class="ax-grid">${gs.length ? gs.map(g => `<div class="ax-card" data-g="${esc(g.id)}"><div class="ax-bar" style="margin:0"><b>${esc(g.title)}</b><span class="pill ${g.status === 'active' ? '' : 'c'}">${esc(g.status)}</span><span class="ax-sp"></span><span class="ax-m">${g.target_date ? esc(g.target_date) + (g.days_left !== null ? ` (${g.days_left >= 0 ? g.days_left + ' d left' : -g.days_left + ' d overdue'})` : '') : 'no target date'}</span></div>
+  ${g.description ? `<p class="ax-hint">${esc(g.description)}</p>` : ''}${g.progress !== null ? `<div class="ax-prog"><i style="width:${g.progress}%"></i></div><span class="ax-m">${g.progress}% · ${g.milestones.filter(m => m.done).length}/${g.milestones.length} milestones</span>` : ''}
+  ${g.milestones.map(m => `<label class="ax-ms ${m.done ? 'done' : ''}"><input type="checkbox" data-m="${esc(m.id)}" ${m.done ? 'checked' : ''}><span>${esc(m.title)}</span>${m.due ? `<small class="ax-m ${!m.done && m.due < new Date().toISOString().slice(0, 10) ? 'bad' : ''}">${esc(m.due)}</small>` : ''}</label>`).join('')}
+  ${g.advice.map(a => `<p class="ax-adv">→ ${esc(a)}</p>`).join('')}
+  <div class="ax-bar"><button class="btn alt sm" data-ga="note">Log update</button>${g.status === 'active' ? '<button class="btn alt sm" data-ga="paused">Pause</button>' : g.status === 'paused' ? '<button class="btn alt sm" data-ga="active">Resume</button>' : '<button class="btn alt sm" data-ga="active">Reopen</button>'}${g.status !== 'done' ? '<button class="btn alt sm" data-ga="done">Mark done</button>' : ''}<button class="btn alt sm" data-ga="del">Delete</button></div>${g.notes.length ? `<details class="ax-hint"><summary>Recent updates</summary>${g.notes.slice().reverse().map(n => `<div>${esc(fdt(n.at))}: ${esc(n.text)}</div>`).join('')}</details>` : ''}</div>`).join('') : '<p class="ax-m">No goals yet.</p>'}</div>
+  <div class="ax-box" style="margin-top:14px"><b>New goal</b><div class="ax-row"><input id="gT" placeholder="Goal title" maxlength="160"><input id="gD" type="date" aria-label="Target date"></div><textarea id="gM" rows="3" placeholder="Milestones, one per line. Optional due date after a | e.g. Mark midterms | 2026-12-01"></textarea><div class="ax-bar"><button class="btn sm" id="gAdd">Add goal</button></div></div>`;
+  $('gAdd').onclick = () => axTry(async () => {
+    const ms = $('gM').value.split('\n').map(l => l.trim()).filter(Boolean).map(l => { const [t, d] = l.split('|').map(x => x.trim()); return { title: t, due: /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d : null }; });
+    await ai('goals.create', { title: $('gT').value, target_date: $('gD').value || null, milestones: ms }); axGoalsLoad();
+  });
+  box.onchange = e => { const cb = e.target.closest('input[data-m]'); if (!cb) return; const id = cb.closest('[data-g]').dataset.g, g = gs.find(x => x.id === id); axTry(async () => { await ai('goals.update', { id, milestones: g.milestones.map(m => m.id === cb.dataset.m ? { ...m, done: cb.checked } : m) }); axGoalsLoad(); }); };
+  box.onclick = e => {
+    const b = e.target.closest('button[data-ga]'); if (!b) return; const id = b.closest('[data-g]').dataset.g, a = b.dataset.ga;
+    axTry(async () => {
+      if (a === 'del') { if (!confirm('Delete this goal?')) return; await ai('goals.delete', { id }); }
+      else if (a === 'note') { const t = prompt('Progress update'); if (!t) return; await ai('goals.update', { id, note: t }); }
+      else await ai('goals.update', { id, status: a });
+      axGoalsLoad();
+    });
+  };
+}
+
+// ----- alerts (watches + notifications)
+const AXW = { low_attendance: 'Low attendance in a course', security_alerts: 'New security alerts', url_change: 'Change on a web page', goal_digest: 'Goal summary' };
+async function axWatchLoad() {
+  const box = $('ax-watch'); let ws = [], ns = [];
+  try {
+    if (AX.set.monitoring_enabled) { const c = await ai('watches.check'); if (c.results?.some(r => r.notified)) toast('New alert'); }
+    ws = (await ai('watches.list')).watches; ns = (await ai('notifications.list')).notifications;
+  } catch (e) { toast(e.message); }
+  const unread = ns.filter(n => !n.read).length; $('axBadge').textContent = unread; $('axBadge').classList.toggle('hide', !unread);
+  const cs = typeof courses !== 'undefined' ? courses : [];
+  box.innerHTML = `<h3>Alerts &amp; monitoring</h3>
+  <div class="ax-box"><label class="ax-chk"><input type="checkbox" id="axMon" ${AX.set.monitoring_enabled ? 'checked' : ''}> <b>Allow Class Room AI to monitor the items I choose below</b></label>
+  <p class="ax-hint">Off by default. When on, it reads only: attendance totals for courses assigned to you, security alerts you can already see, public web pages you list, and your own goals. Alerts appear here in the app only (no email or push). Checks run when you open this tab, plus automatically for web-page and goal watches if your admin enabled the scheduler. Turn this off to stop all checks.</p></div>
+  ${AX.set.monitoring_enabled ? `<div class="ax-box" style="margin-top:12px"><b>New watch</b><div class="ax-row"><select id="wK">${Object.entries(AXW).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('')}</select><input id="wL" placeholder="Label (optional)" maxlength="120"></div>
+  <div class="ax-row" id="wF"></div><div class="ax-row"><select id="wI"><option value="60">Check hourly</option><option value="360" selected>Every 6 hours</option><option value="1440">Daily</option><option value="10080">Weekly</option></select><select id="wMax"><option value="1">1 alert/day max</option><option value="3" selected>3 alerts/day max</option><option value="10">10 alerts/day max</option></select></div><div class="ax-bar"><button class="btn sm" id="wAdd">Add watch</button></div></div>` : ''}
+  <div class="ax-grid">${ws.map(w => `<div class="ax-card" data-w="${esc(w.id)}"><div class="ax-bar" style="margin:0"><b>${esc(w.label)}</b><span class="pill ${w.status === 'active' ? '' : 'c'}">${esc(w.status)}</span><span class="ax-sp"></span><span class="ax-m">${esc(AXW[w.kind] || w.kind)} · every ${w.interval_minutes >= 1440 ? w.interval_minutes / 1440 + ' d' : w.interval_minutes / 60 + ' h'} · last ${esc(axDate(w.last_run_at))}</span></div>${w.params?.url ? `<p class="ax-hint">${esc(w.params.url)}</p>` : ''}<div class="ax-bar"><button class="btn alt sm" data-wa="run">Check now</button><button class="btn alt sm" data-wa="${w.status === 'active' ? 'paused' : 'active'}">${w.status === 'active' ? 'Pause' : 'Resume'}</button><button class="btn alt sm" data-wa="del">Delete</button></div></div>`).join('') || '<p class="ax-m">No watches yet.</p>'}</div>
+  <div class="ax-bar" style="margin-top:16px"><b>Notifications</b><span class="ax-sp"></span><button class="btn alt sm" id="nRead">Mark all read</button><button class="btn alt sm" id="nClr">Clear</button></div>
+  <div class="ax-grid">${ns.map(n => `<div class="ax-card ax-n ${n.read ? '' : 'unread'}"><b>${esc(n.title)}</b><span class="ax-m">${esc(fdt(n.created_at))}</span><p>${esc(n.body)}</p></div>`).join('') || '<p class="ax-m">Nothing yet.</p>'}</div>`;
+  $('axMon').onchange = e => axTry(async () => { const r = await ai('settings.update', { monitoring_enabled: e.target.checked }); AX.set = r.settings; axWatchLoad(); });
+  const fields = () => { const k = $('wK').value; $('wF').innerHTML = k === 'low_attendance' ? `<select id="wC">${cs.map(c => `<option value="${esc(c.id)}">${esc(c.code)} — ${esc(c.title)}</option>`).join('')}</select><input id="wTh" type="number" min="1" max="100" value="75" aria-label="Threshold %"><select id="wP"><option value="week">This week</option><option value="month">This month</option><option value="lastmonth">Last month</option></select>` : k === 'url_change' ? '<input id="wU" type="url" placeholder="https://…" style="grid-column:1/-1">' : ''; };
+  if ($('wK')) { $('wK').onchange = fields; fields(); $('wAdd').onclick = () => axTry(async () => { const k = $('wK').value; await ai('watches.create', { kind: k, label: $('wL').value, interval_minutes: +$('wI').value, max_per_day: +$('wMax').value, course_id: $('wC')?.value, threshold: +$('wTh')?.value, period: $('wP')?.value, url: $('wU')?.value }); axWatchLoad(); }); }
+  box.onclick = e => { const b = e.target.closest('button[data-wa]'); if (!b) return; const id = b.closest('[data-w]').dataset.w, a = b.dataset.wa; axTry(async () => { if (a === 'del') { if (!confirm('Delete this watch?')) return; await ai('watches.delete', { id }); } else if (a === 'run') { const r = await ai('watches.check', { id }); toast(r.results[0]?.notified ? 'New alert created' : r.results[0]?.error ? 'Check failed: ' + r.results[0].error : 'Checked. Nothing new.'); } else await ai('watches.update', { id, status: a }); axWatchLoad(); }); };
+  $('nRead').onclick = () => axTry(async () => { await ai('notifications.read', {}); axWatchLoad(); }); $('nClr').onclick = () => axTry(async () => { await ai('notifications.clear', {}); axWatchLoad(); });
+}
+
+// ----- memory & settings
+async function axMemLoad() {
+  const box = $('ax-mem'); let ms = []; try { ms = (await ai('memory.list')).memories; } catch (e) { toast(e.message); }
+  const c = AX.caps || {};
+  box.innerHTML = `<h3>Memory &amp; settings</h3>
+  <div class="ax-box"><label class="ax-chk"><input type="checkbox" id="sMem" ${AX.set.memory_enabled ? 'checked' : ''}> <b>Remember things across chats</b></label><p class="ax-hint">When on, the AI can save preferences and decisions you share and look up earlier chats when a question refers to them. Your chat history is kept either way. When off, nothing is saved or looked up across chats.</p>
+  <label class="ax-chk" style="margin-top:8px"><input type="checkbox" id="sPro" ${AX.set.proactive_enabled ? 'checked' : ''}> <b>Suggest next steps</b></label><p class="ax-hint">Shows a short nudge when a new chat starts and you have overdue goals or unread alerts.</p></div>
+  <div class="ax-box" style="margin-top:12px"><b>What this assistant can and cannot do here</b><p class="ax-hint">Semantic search of old chats: <b>${c.semantic_search ? 'on' : 'off — using keyword matching (needs AI_EMBED_MODEL)'}</b>.<br>Running or testing code: <b>not available</b> — code is reviewed by reading only.<br>Reading web pages: only after you approve each page, https only, never private or internal addresses.<br>Hourly limit: ${c.hourly_limit ?? '–'} requests (Agent mode uses 3).</p>${c.semantic_search ? '<div class="ax-bar"><button class="btn alt sm" id="sIdx">Index older chats for semantic search</button></div>' : ''}</div>
+  <div class="ax-bar" style="margin-top:16px"><b>Saved memories (${ms.length})</b><span class="ax-sp"></span>${ms.length ? '<button class="btn alt sm" id="mAll">Delete all</button>' : ''}</div>
+  <div class="ax-grid">${ms.map(m => `<div class="ax-file"><span class="pill c">${esc(m.kind)}</span><span style="flex:1;overflow-wrap:anywhere">${esc(m.content)}</span><span class="ax-m">${esc(fdt(m.created_at))}</span><button class="btn alt sm" data-md="${esc(m.id)}">Delete</button></div>`).join('') || '<p class="ax-m">Nothing saved. Say “remember that…” in chat, or add one here.</p>'}</div>
+  <div class="ax-box" style="margin-top:12px"><div class="ax-row"><select id="mK"><option value="preference">Preference</option><option value="decision">Decision</option><option value="project">Project</option><option value="fact">Fact</option></select><input id="mT" placeholder="e.g. I prefer Python and short answers" maxlength="1000" style="grid-column:span 2"></div><div class="ax-bar"><button class="btn sm" id="mAdd">Add memory</button></div></div>`;
+  const setT = k => e => axTry(async () => { const r = await ai('settings.update', { [k]: e.target.checked }); AX.set = r.settings; });
+  $('sMem').onchange = setT('memory_enabled'); $('sPro').onchange = setT('proactive_enabled');
+  if ($('sIdx')) $('sIdx').onclick = () => axTry(async () => { let t = 0; for (let i = 0; i < 20; i++) { const r = await ai('index.backfill'); t += r.indexed; if (!r.more) break; } toast(`Indexed ${t} message(s)`); });
+  $('mAdd').onclick = () => axTry(async () => { await ai('memory.add', { content: $('mT').value, kind: $('mK').value }); axMemLoad(); });
+  box.onclick = e => { const b = e.target.closest('button[data-md]'); if (b) axTry(async () => { await ai('memory.delete', { id: b.dataset.md }); axMemLoad(); }); };
+  if ($('mAll')) $('mAll').onclick = () => axTry(async () => { if (!confirm('Delete ALL saved memories? Chat history is not affected.')) return; await ai('memory.delete', { all: true }); axMemLoad(); });
+}
+
+async function aiInit() {
+  if (AX.ready) { try { const i = await ai('init'); AX.set = i.settings; AX.caps = i; $('axBadge').textContent = i.unread; $('axBadge').classList.toggle('hide', !i.unread); } catch { } return aiList($('axSearch').value.trim()); }
+  AX.ready = true;
+  axSug.forEach(q => { const b = document.createElement('button'); b.className = 'btn alt sm'; b.textContent = q; b.onclick = () => aiSend(q); $('aiSug').appendChild(b); });
+  $('aiGo').onclick = () => aiSend($('aiQ').value); $('aiQ').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); aiSend($('aiQ').value); } });
+  $('aiNew').onclick = aiNew; $('axImgBtn').onclick = () => $('axImg').click(); $('axImg').onchange = e => axPick(e.target.files[0]);
+  let st; $('axSearch').oninput = e => { clearTimeout(st); st = setTimeout(() => aiList(e.target.value.trim()), 350); };
+  $('axSub').onclick = e => { const b = e.target.closest('button[data-ax]'); if (b) axTab(b.dataset.ax); };
+  $('aiLog').onclick = e => { const v = e.target.closest('[data-fv]'), d = e.target.closest('[data-fd]'); if (v) axPreview(v.dataset.fv); if (d) axDownload(d.dataset.fd); };
+  $('ax-files').onclick = e => { const v = e.target.closest('[data-fv]'), d = e.target.closest('[data-fd]'), x = e.target.closest('[data-fx]'); if (v) axPreview(v.dataset.fv); if (d) axDownload(d.dataset.fd); if (x && confirm('Delete this file?')) axTry(async () => { await ai('files.delete', { id: x.dataset.fx }); axFilesLoad(); }); };
+  $('axMX').onclick = () => $('axModal').classList.add('hide'); $('axModal').onclick = e => { if (e.target === $('axModal')) $('axModal').classList.add('hide'); };
+  $('axMEdit').onclick = () => axModalEdit(true);
+  $('axMDl').onclick = () => { const f = AX.modal; if (f) axSave(f.path, new Blob([$('axME').classList.contains('hide') ? f.content : $('axME').value], { type: 'text/plain;charset=utf-8' })); };
+  $('axMSave').onclick = () => axTry(async () => { const f = AX.modal, content = $('axME').value; await ai('files.save', { path: f.path, content, project_id: f.project_id ?? (AX.scope || undefined) }); toast('Saved'); $('axModal').classList.add('hide'); axFilesLoad(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') $('axModal').classList.add('hide'); });
+  try { const i = await ai('init'); AX.set = i.settings; AX.caps = i; $('axBadge').textContent = i.unread; $('axBadge').classList.toggle('hide', !i.unread); } catch { }
+  axProjects(); aiList();
+}
+
+// ---- Security alerts ----
+const secK = { shared_device: 'Several students used one device', outside_venue: 'Checked in outside the venue', failed_verification: 'Repeated failed checks', impossible_travel: 'Two far-apart check-ins close in time' };
+async function secLoad() {
+  const { data, error } = await sb.from('ai_security_alerts').select('id,kind,risk,evidence,review_status,created_at,review_note').order('created_at', { ascending: false }).limit(100);
+  if (error) return toast('Could not load alerts. Has 002_security_and_students.sql been run?');
+  $('secNone').classList.toggle('hide', !!data.length);
+  $('secRows').innerHTML = data.map(a => `<tr><td>${fdt(a.created_at)}</td><td><b>${esc(secK[a.kind] || a.kind)}</b><br><span class="pill ${a.risk === 'high' ? 'red' : a.risk === 'medium' ? 'late' : 'c'}">${esc(a.risk)} risk</span></td><td><small>${esc(Object.entries(a.evidence || {}).map(([k, v]) => k + ': ' + (Array.isArray(v) ? v.join(', ') : v)).join(' · '))}</small></td><td>${a.review_status === 'open' ? `<button class="btn alt sm" data-s="${a.id}" data-d="cleared">Clear</button> <button class="btn red sm" data-s="${a.id}" data-d="confirmed">Confirm</button>` : esc(a.review_status) + (a.review_note ? '<br><small>' + esc(a.review_note) + '</small>' : '')}</td></tr>`).join('');
+}
+$('secRows').onclick = async e => { const b = e.target.closest('button[data-s]'); if (!b) return; const n = prompt('Optional note'); if (n === null) return; try { await rpc('ai_review_alert', { p_id: b.dataset.s, p_decision: b.dataset.d, p_note: n || null }); secLoad(); } catch (er) { toast(er.message); } };
+$('secScan').onclick = async () => { $('secScan').disabled = true; try { const { data: ss } = await sb.from('attendance_sessions').select('id').order('created_at', { ascending: false }).limit(10); let n = 0; for (const x of ss || []) n += await rpc('ai_scan_session', { p_session: x.id }) || 0; toast(n + ' new alert(s)'); secLoad(); } catch (er) { toast(er.message); } $('secScan').disabled = false; };
+boot();
+</script><script>
+// Our Class Room: PWA install, offline notice, update handling
+(function () {
+  'use strict';
+  const ua = navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isAndroid = /android/i.test(ua);
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const K = 'ourclassroom.install';
+  const st = () => { try { return JSON.parse(localStorage.getItem(K) || '{}'); } catch { return {}; } };
+  const save = o => { try { localStorage.setItem(K, JSON.stringify(Object.assign(st(), o))); } catch {} };
+  let deferred = null;
+
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+
+  // If the icons were uploaded into the main folder instead of icons/, find them there and rebuild the manifest.
+  (async () => { try {
+    const link = document.querySelector('link[rel=manifest]'); if (!link) return;
+    const base = new URL(link.href), m = await (await fetch(base, { cache: 'no-store' })).json(); let changed = false;
+    for (const ic of (m.icons || [])) {
+      const abs = new URL(ic.src, base); let ok = false; try { ok = (await fetch(abs, { cache: 'no-store' })).ok; } catch { }
+      if (ok) { ic.src = abs.href; continue; }
+      const alt = new URL(ic.src.split('/').pop(), base);
+      try { if ((await fetch(alt, { cache: 'no-store' })).ok) { ic.src = alt.href; changed = true; } } catch { }
+    }
+    if (changed) { m.start_url = new URL(m.start_url, base).href; m.scope = new URL(m.scope || './', base).href; m.id = new URL(m.id || m.start_url, base).href; link.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/manifest+json' })); }
+  } catch { } })();
+
+  const css = document.createElement('style');
+  css.textContent = `
+  .ocr-bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99999;max-width:460px;margin:0 auto;background:#011A65;color:#fff;border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font:14px/1.45 Inter,system-ui,sans-serif;display:flex;gap:12px;align-items:center}
+  .ocr-bar img{width:44px;height:44px;border-radius:10px;flex:none}
+  .ocr-bar b{display:block;font-size:15px}.ocr-bar span{opacity:.85;font-size:13px}
+  .ocr-bar .acts{display:flex;gap:8px;margin-left:auto;flex:none}
+  .ocr-bar button{border:0;border-radius:10px;padding:9px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
+  .ocr-go{background:#FBB917;color:#011A65}.ocr-x{background:rgba(255,255,255,.14);color:#fff}
+  .ocr-modal{position:fixed;inset:0;z-index:100000;background:rgba(1,26,101,.6);display:flex;align-items:flex-end;justify-content:center;padding:12px}
+  .ocr-sheet{background:#fff;color:#0b2236;border-radius:20px;max-width:460px;width:100%;padding:20px;font:15px/1.5 Inter,system-ui,sans-serif;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  .ocr-sheet h3{margin:0 0 4px;font-size:18px}.ocr-sheet ol{padding-left:20px;margin:12px 0}.ocr-sheet li{margin:8px 0}
+  .ocr-sheet button{width:100%;border:0;border-radius:12px;padding:12px;background:#011A65;color:#fff;font:600 15px Inter,system-ui,sans-serif;cursor:pointer}
+  .ocr-off{position:fixed;top:0;left:0;right:0;z-index:99998;background:#FBB917;color:#011A65;text-align:center;font:600 13px Inter,system-ui,sans-serif;padding:calc(6px + env(safe-area-inset-top)) 10px 6px}
+  .ocr-link{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit;padding:0}`;
+  document.head.appendChild(css);
+
+  function bar(title, sub, goLabel, onGo) {
+    if (document.querySelector('.ocr-bar')) return;
+    const d = document.createElement('div'); d.className = 'ocr-bar'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Install Our Class Room');
+    d.innerHTML = '<img alt="" src="data:image/png;base64,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"><div><b></b><span></span></div><div class="acts"><button class="ocr-x" type="button">Not now</button><button class="ocr-go" type="button"></button></div>';
+    d.querySelector('b').textContent = title; d.querySelector('span').textContent = sub; d.querySelector('.ocr-go').textContent = goLabel;
+    d.querySelector('.ocr-x').onclick = () => { save({ dismissed: Date.now() }); d.remove(); };
+    d.querySelector('.ocr-go').onclick = () => { d.remove(); onGo(); };
+    document.body.appendChild(d);
+  }
+  function iosGuide() {
+    const m = document.createElement('div'); m.className = 'ocr-modal';
+    const safari = /safari/i.test(ua) && !/crios|fxios|edgios|chrome/i.test(ua);
+    m.innerHTML = '<div class="ocr-sheet" role="dialog" aria-modal="true"><h3>Install Our Class Room on iPhone</h3>' +
+      (safari ? '' : '<p style="color:#b4531f;margin:6px 0">Open this page in <b>Safari</b> to install. Other iPhone browsers cannot add apps to the Home Screen.</p>') +
+      '<ol><li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari.</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. Open <b>Our Classroom</b> from your Home Screen.</li></ol>' +
+      '<p style="font-size:13px;color:#5f7689;margin:0 0 12px">Notifications on iPhone need iOS 16.4 or later and work only after the app is added to the Home Screen.</p><button type="button">Got it</button></div>';
+    m.onclick = e => { if (e.target === m || e.target.tagName === 'BUTTON') { save({ iosSeen: Date.now() }); m.remove(); } };
+    document.body.appendChild(m);
+  }
+  async function androidInstall() {
+    if (!deferred) return;
+    deferred.prompt(); const r = await deferred.userChoice.catch(() => ({})); deferred = null;
+    if (r.outcome === 'accepted') save({ installed: true });
+  }
+  async function diagnose() {
+    const out = [];
+    if (!window.isSecureContext) out.push('This page is not served over HTTPS.');
+    if (!('serviceWorker' in navigator)) out.push('This browser cannot install web apps.');
+    else { try { if (!(await navigator.serviceWorker.getRegistration())) out.push('sw.js is not running. Upload sw.js next to index.html, then reload the page.'); } catch { } }
+    const link = document.querySelector('link[rel=manifest]');
+    let m = null;
+    try { const r = await fetch(link.href, { cache: 'no-store' }); if (!r.ok) throw 0; m = await r.json(); } catch { out.push('manifest.webmanifest could not be loaded. Upload it next to index.html.'); }
+    if (m) {
+      for (const ic of (m.icons || [])) { try { const r = await fetch(new URL(ic.src, link.href), { cache: 'no-store' }); if (!r.ok) throw 0; } catch { out.push('Not found: ' + new URL(ic.src, link.href).href + ' . Open that address in your browser. If it shows an error, the file is not at that path.'); } }
+      if (!(m.icons || []).some(i => /192/.test(i.sizes)) || !(m.icons || []).some(i => /512/.test(i.sizes))) out.push('The manifest needs 192 and 512 pixel icons.');
+    }
+    return out;
+  }
+  function manualGuide() {
+    const mo = document.createElement('div'); mo.className = 'ocr-modal';
+    mo.innerHTML = '<div class="ocr-sheet" role="dialog" aria-modal="true"><h3>Install Our Class Room</h3><p style="margin:4px 0 0;color:#5f7689">Your browser has not offered the one-tap install yet. Add it from the browser menu:</p>' +
+      '<ol><li><b>Samsung Internet:</b> tap the menu (≡), then <b>Add page to</b>, then <b>Home screen</b> (or <b>Install app</b> if shown).</li><li><b>Chrome:</b> tap ⋮, then <b>Install app</b> or <b>Add to Home screen</b>.</li></ol>' +
+      '<div id="ocrDiag" style="font-size:13px;margin:0 0 12px;color:#5f7689">Checking this site…</div><button type="button">Got it</button></div>';
+    mo.onclick = e => { if (e.target === mo || e.target.tagName === 'BUTTON') mo.remove(); };
+    document.body.appendChild(mo);
+    diagnose().then(p => { const d = mo.querySelector('#ocrDiag'); if (!d) return; d.innerHTML = p.length ? '<b style="color:#b4531f">Why one-tap install is unavailable:</b><ul style="margin:6px 0 0;padding-left:18px">' + p.map(x => '<li></li>').join('') + '</ul>' : 'This site meets install requirements. If the menu still has no install option, reload the page once and try again.'; if (p.length) d.querySelectorAll('li').forEach((li, i) => li.textContent = p[i]); });
+  }
+  window.ocrInstall = () => isIOS ? iosGuide() : (deferred ? androidInstall() : manualGuide());
+  window.ocrIsInstalled = () => standalone() || !!st().installed;
+
+  addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferred = e;
+    if (standalone()) return;
+    const s = st(); document.querySelectorAll('[data-ocr-install]').forEach(b => b.hidden = false);
+    if (!s.installed && (!s.dismissed || Date.now() - s.dismissed > 7 * 864e5)) bar('Install Our Class Room', 'Add it to your home screen for quick access.', 'Install', androidInstall);
+  });
+  addEventListener('appinstalled', () => { save({ installed: true }); document.querySelector('.ocr-bar')?.remove(); document.querySelectorAll('[data-ocr-install]').forEach(b => b.hidden = true); });
+
+  addEventListener('DOMContentLoaded', () => {
+    if (standalone()) { save({ installed: true }); document.documentElement.classList.add('ocr-standalone'); return; }
+    const s = st();
+    if (isIOS) {
+      document.querySelectorAll('[data-ocr-install]').forEach(b => { b.hidden = false; });
+      if (!s.iosSeen && !s.dismissed) setTimeout(() => bar('Install Our Class Room', 'Add it to your iPhone Home Screen.', 'How', iosGuide), 2500);
+    } else if (isAndroid) {
+      document.querySelectorAll('[data-ocr-install]').forEach(b => { b.hidden = !deferred; });
+    }
+    document.querySelectorAll('[data-ocr-install]').forEach(b => b.addEventListener('click', () => window.ocrInstall()));
+  });
+
+  // Offline notice. Attendance can never be verified offline: submissions need the server.
+  let off;
+  const net = () => {
+    if (!navigator.onLine && !off) { off = document.createElement('div'); off.className = 'ocr-off'; off.setAttribute('role', 'status'); off.textContent = 'You’re offline. Attendance can’t be submitted or verified until you reconnect.'; document.body.appendChild(off); }
+    if (navigator.onLine && off) { off.remove(); off = null; }
+  };
+  addEventListener('online', net); addEventListener('offline', net); addEventListener('DOMContentLoaded', net);
+})();
+
+</script>
+<script>
+// ===== Class Room (admin / lecturer / course rep / assistant) =====
+// Files go straight from the phone or computer to the private "classroom-pdfs" storage bucket (with real upload progress),
+// then the ai-chat function reads the PDF, writes the notes and builds the quiz. Row-level security limits each staff
+// member to their own materials; administrators see and manage everything.
+(function () {
+  'use strict';
+  const LEVELS = [100, 200, 300, 400, 500, 600, 700, 800], MAXB = 20 * 1024 * 1024;
+  const norm = t => String(t || '').trim().replace(/\s+/g, ' ').toLowerCase();
+  const clean = t => String(t || '').trim().replace(/\s+/g, ' ');
+  const adm = () => typeof isAdmin !== 'undefined' && isAdmin;
+  const sz = n => n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
+  const kindName = k => k === 'past_question' ? 'Past questions' : 'Lecture notes';
+  const when = d => new Date(d).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+  let ready = false, file = null, busy = false, libT = null, mats = [], quizzes = [], stuRows = [];
+
+  // ---- small markdown renderer (same rules as the student app) ----
+  const inl = s => { const c = []; s = s.replace(/`([^`]+)`/g, (_, x) => { c.push(x); return '\u0000' + (c.length - 1) + '\u0000'; }); s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?!\w)/g, '$1<em>$2</em>'); return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + c[i] + '</code>'); };
+  function render(src) {
+    const L = String(src || '').replace(/\r/g, '').split('\n'); let o = '', i = 0, para = [];
+    const fl = () => { if (para.length) { o += '<p>' + inl(esc(para.join(' '))) + '</p>'; para = []; } }, li = /^(\s*)([-*•]|\d+[.)])\s+(.*)$/;
+    while (i < L.length) {
+      const l = L[i]; let m;
+      if (/^```/.test(l)) { fl(); const b = []; i++; while (i < L.length && !/^```/.test(L[i])) b.push(L[i++]); i++; o += '<pre><code>' + esc(b.join('\n')) + '</code></pre>'; continue; }
+      if ((m = /^(#{1,4})\s+(.*)$/.exec(l))) { fl(); o += `<h${m[1].length + 1}>${inl(esc(m[2]))}</h${m[1].length + 1}>`; i++; continue; }
+      if (/^>\s?/.test(l)) { fl(); const b = []; while (i < L.length && /^>\s?/.test(L[i])) b.push(L[i++].replace(/^>\s?/, '')); o += '<blockquote>' + b.map(x => inl(esc(x))).join('<br>') + '</blockquote>'; continue; }
+      if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < L.length && /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(L[i + 1])) { fl(); const cs = r => r.trim().replace(/^\||\|$/g, '').split('|').map(x => x.trim()), hd = cs(l), rows = []; i += 2; while (i < L.length && /^\s*\|.*\|\s*$/.test(L[i])) rows.push(cs(L[i++])); o += '<div class="sc"><table><tr>' + hd.map(x => `<th>${inl(esc(x))}</th>`).join('') + '</tr>' + rows.map(r => '<tr>' + r.map(x => `<td>${inl(esc(x))}</td>`).join('') + '</tr>').join('') + '</table></div>'; continue; }
+      if (li.test(l)) { fl(); let h = '', st = []; while (i < L.length && (m = li.exec(L[i]))) { const d = Math.min(Math.floor(m[1].length / 2), 3), tg = /\d/.test(m[2][0]) ? 'ol' : 'ul'; while (st.length > d + 1) h += '</li></' + st.pop() + '>'; if (st.length === d + 1) { if (st[d] !== tg) { h += '</li></' + st[d] + '><' + tg + '><li>'; st[d] = tg; } else h += '</li><li>'; } else while (st.length < d + 1) { st.push(tg); h += '<' + tg + '><li>'; } h += inl(esc(m[3])); i++; } while (st.length) h += '</li></' + st.pop() + '>'; o += h; continue; }
+      if (!l.trim()) { fl(); i++; continue; }
+      para.push(l.trim()); i++;
+    }
+    fl(); return o;
+  }
+
+  // ---- modal ----
+  const modal = (title, body, onSave) => { $('crMT').textContent = title; $('crMB').innerHTML = body; $('crMSave').classList.toggle('hide', !onSave); $('crMSave').onclick = onSave || null; $('crModal').classList.remove('hide'); };
+  $('crMX').onclick = () => $('crModal').classList.add('hide');
+
+  // ---- sub tabs ----
+  function sub(k) {
+    document.querySelectorAll('#crSub button').forEach(b => b.classList.toggle('on', b.dataset.cs === k));
+    ['up', 'lib', 'qz', 'stu', 'crs'].forEach(x => $('cs-' + x).classList.toggle('hide', x !== k));
+    clearInterval(libT); libT = null;
+    if (k === 'lib') loadLib(); if (k === 'qz') loadQuizzes(); if (k === 'stu') loadStudents(); if (k === 'crs') loadCourses2();
+  }
+  $('crSub').onclick = e => { const b = e.target.closest('button'); if (b) sub(b.dataset.cs); };
+
+  window.crInit = async function () {
+    if (ready) return; ready = true;
+    ['cuLevel', 'clLevel', 'csLevel'].forEach(id => LEVELS.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n + ' Level'; $(id).appendChild(o); }));
+    try {
+      const [{ data: d }, { data: c }, { data: m }] = await Promise.all([sb.from('departments').select('name').order('name'), sb.from('courses').select('code').order('code'), sb.from('cr_materials').select('department_name').neq('department_key', '*').limit(500)]);
+      const names = [...new Set([...(d || []).map(x => x.name), ...(m || []).map(x => x.department_name)])].sort();
+      $('crDepts').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+      $('crCodes').innerHTML = [...new Set((c || []).map(x => x.code))].map(n => `<option value="${esc(n)}">`).join('');
+    } catch { }
+    if (!adm()) $('ccNote').textContent = 'Courses available in the system. Add the ones you teach under "Host attendance". Only administrators can edit course details.';
+    else $('ccNote').textContent = 'Administrators can correct course codes and titles. Courses are not deleted here, to protect attendance records.';
+  };
+
+  // ---- upload ----
+  function setFile(f) {
+    file = null; $('cuDrop').classList.remove('has');
+    if (!f) { $('cuFileName').textContent = 'Tap to choose a PDF'; $('cuFileInfo').textContent = 'PDF only · up to 20 MB'; return; }
+    if (!/\.pdf$/i.test(f.name) || (f.type && f.type !== 'application/pdf')) { $('cuFile').value = ''; return toast('Only PDF files can be uploaded.'); }
+    if (f.size === 0) { $('cuFile').value = ''; return toast('That file is empty.'); }
+    if (f.size > MAXB) { $('cuFile').value = ''; return toast('That PDF is ' + sz(f.size) + '. The limit is 20 MB.'); }
+    f.slice(0, 5).text().then(t => {
+      if (t !== '%PDF-') { $('cuFile').value = ''; return toast('That file is not a valid PDF.'); }
+      file = f; $('cuDrop').classList.add('has'); $('cuFileName').textContent = f.name; $('cuFileInfo').textContent = sz(f.size) + ' · ready to upload';
+      if (!$('cuTitle').value.trim()) $('cuTitle').value = f.name.replace(/\.pdf$/i, '').replace(/[_]+/g, ' ');
+    });
+  }
+  $('cuFile').onchange = e => setFile(e.target.files[0]);
+  const dz = $('cuDrop');
+  ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
+  dz.addEventListener('drop', e => setFile(e.dataTransfer.files[0]));
+  $('cuAll').onchange = () => { $('cuDept').disabled = $('cuAll').checked; };
+
+  const prog = (pct, msg, state) => { $('cuProg').classList.remove('hide', 'err', 'ok'); if (state) $('cuProg').classList.add(state); $('cuBar').style.width = pct + '%'; $('cuMsg').textContent = msg; };
+  function putFile(path, f, token, on) {
+    return new Promise((ok, no) => {
+      const x = new XMLHttpRequest(); x.open('POST', `${OURCLASSROOM.SUPABASE_URL}/storage/v1/object/classroom-pdfs/${path}`);
+      x.setRequestHeader('Authorization', 'Bearer ' + token); x.setRequestHeader('apikey', OURCLASSROOM.SUPABASE_ANON_KEY); x.setRequestHeader('Content-Type', 'application/pdf'); x.setRequestHeader('x-upsert', 'false');
+      x.upload.onprogress = e => { if (e.lengthComputable) on(Math.round(e.loaded / e.total * 100)); };
+      x.onload = () => { if (x.status >= 200 && x.status < 300) return ok(); let m = 'Upload failed (' + x.status + ')'; try { m = JSON.parse(x.responseText).message || m; } catch { } no(new Error(x.status === 404 || /bucket/i.test(m) ? 'The upload storage is not set up. Run classroom.sql first.' : x.status === 403 || /row-level|policy/i.test(m) ? 'You are not permitted to upload files.' : m)); };
+      x.onerror = () => no(new Error('Network error. Check your connection and try again.')); x.ontimeout = () => no(new Error('The upload timed out. Try again on a better connection.')); x.timeout = 10 * 60e3;
+      x.send(f);
+    });
+  }
+  $('cuGo').onclick = async () => {
+    if (busy) return;
+    const kind = $('cuKind').value, title = clean($('cuTitle').value), code = clean($('cuCode').value).toUpperCase(), all = $('cuAll').checked, dept = clean($('cuDept').value), level = +$('cuLevel').value;
+    if (title.length < 2) return toast('Enter a title.'); if (code.length < 2) return toast('Enter the course code.');
+    if (!all && dept.length < 2) return toast('Type the department, or tick "all departments".'); if (!LEVELS.includes(level)) return toast('Choose the level.');
+    if (!file) return toast('Choose a PDF first.'); if (!navigator.onLine) return toast('You are offline.');
+    busy = true; $('cuGo').disabled = true; let path = null;
+    try {
+      const { data: { session } } = await sb.auth.getSession(); if (!session) throw new Error('Please sign in again.');
+      path = `${session.user.id}/${crypto.randomUUID()}.pdf`; prog(0, 'Uploading… 0%');
+      await putFile(path, file, session.access_token, p => prog(p, 'Uploading… ' + p + '%'));
+      prog(100, 'Saving…');
+      const { data: row, error } = await sb.from('cr_materials').insert({ kind, title, description: clean($('cuDesc').value) || null, course_code: code, course_title: clean($('cuCTitle').value) || null, department_name: all ? 'All departments' : dept, department_key: all ? '*' : norm(dept), level, academic_session: clean($('cuSess').value) || null, pdf_path: path, pdf_name: file.name.slice(0, 200), pdf_size: file.size, uploader_name: $('who').textContent || null }).select('id').single();
+      if (error) { await sb.storage.from('classroom-pdfs').remove([path]).catch(() => { }); path = null; throw new Error(/relation|does not exist/.test(error.message) ? 'Class Room tables are missing. Run classroom.sql first.' : error.message); }
+      prog(100, 'Uploaded. Starting AI…');
+      try {
+        const r = await pipeline(row.id, (pct, msg) => prog(pct, msg));
+        prog(100, r.quizError ? '✔ Notes are ready for students. Quiz not built: ' + r.quizError : '✔ Done. Notes and quiz are live for students.', 'ok'); toast('Notes published');
+      } catch (e) { prog(100, e.message + ' You can retry from "Notes & past questions".', 'err'); }
+      busy = false; $('cuGo').disabled = false; $('cuReset').classList.remove('hide');
+    } catch (e) { prog(0, e.message, 'err'); busy = false; $('cuGo').disabled = false; }
+  };
+  async function pipeline(id, ui) {
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    ui(5, 'Reading the PDF…');
+    const start = await ai('classroom.process', { material_id: id });
+    if (start.parts) {
+      const total = start.parts; let next = 0, done = 0, failed = null; ui(8, `Writing notes (0/${total})…`);
+      const worker = async () => {
+        while (!failed && next < total) {
+          const i = next++; let ok = false, last = null;
+          for (let t = 0; t < 3 && !ok; t++) { try { await ai('classroom.part', { material_id: id, index: i }); ok = true; } catch (e) { last = e; await sleep(1500 * (t + 1)); } }
+          if (!ok) { failed = last; return; }
+          done++; ui(8 + Math.round(done / total * 80), `Writing notes (${done}/${total})…`);
+        }
+      };
+      await Promise.all([worker(), worker()]);
+      if (failed) { await ai('classroom.fail', { material_id: id, message: failed.message }).catch(() => { }); throw failed; }
+      ui(90, 'Putting the notes together…');
+      await ai('classroom.finish', { material_id: id });
+    }
+    ui(94, 'Building the quiz…');
+    try { await ai('classroom.quiz', { material_id: id, count: 10 }); return { quizError: null }; } catch (e) { return { quizError: e.message }; }
+  }
+  $('cuReset').onclick = () => { file = null; $('cuFile').value = ''; setFile(null); ['cuTitle', 'cuDesc'].forEach(i => $(i).value = ''); $('cuProg').classList.add('hide'); $('cuReset').classList.add('hide'); $('cuGo').disabled = false; busy = false; };
+
+  // ---- library ----
+  async function loadLib() {
+    const { data, error } = await sb.from('cr_materials').select('id,kind,title,course_code,course_title,department_name,level,academic_session,status,progress,error,published,pdf_path,pdf_name,pdf_size,uploader_name,uploaded_by,created_at,page_count').order('created_at', { ascending: false }).limit(300);
+    if (error) { $('clList').innerHTML = `<div class="empty">${esc(/does not exist/.test(error.message) ? 'Run classroom.sql to set up Class Room.' : error.message)}</div>`; return; }
+    mats = data || []; drawLib();
+    if (!libT) libT = setInterval(() => { if (mats.some(m => m.status === 'processing') && !$('cs-lib').classList.contains('hide')) loadLib(); }, 4000);
+  }
+  function drawLib() {
+    const k = $('clKind').value, lv = $('clLevel').value, q = norm($('clQ').value);
+    const f = mats.filter(m => (!k || m.kind === k) && (!lv || m.level == lv) && (!q || norm([m.title, m.course_code, m.department_name, m.course_title].join(' ')).includes(q)));
+    $('clList').innerHTML = f.length ? f.map(m => {
+      const st = m.status === 'ready' ? `<span class="pill${m.published ? '' : ' c'}">${m.published ? 'Live' : 'Hidden'}</span>` : m.status === 'processing' ? '<span class="pill late">Processing</span>' : m.status === 'failed' ? '<span class="pill red">Failed</span>' : '<span class="pill c">Not processed</span>';
+      return `<div class="crit"><h4>${esc(m.title)} ${st}</h4><div class="meta">${esc(m.course_code)} · ${kindName(m.kind)} · ${m.level} Level · ${esc(m.department_name)}${m.academic_session ? ' · ' + esc(m.academic_session) : ''}<br>${adm() ? esc(m.uploader_name || 'Unknown') + ' · ' : ''}${when(m.created_at)}${m.pdf_size ? ' · ' + sz(m.pdf_size) : ''}${m.page_count ? ' · ' + m.page_count + ' pages' : ''}</div>
+      ${m.status === 'processing' ? `<div class="meta">${esc(m.progress || 'Working…')}</div>` : ''}${m.error ? `<div class="err">${esc(m.error)}</div>` : ''}
+      <div class="acts">${m.status === 'ready' ? `<button class="btn alt sm" data-a="view" data-id="${m.id}">Preview</button><button class="btn alt sm" data-a="edit" data-id="${m.id}">Edit</button><button class="btn alt sm" data-a="pub" data-id="${m.id}">${m.published ? 'Hide' : 'Publish'}</button>` : `<button class="btn alt sm" data-a="edit" data-id="${m.id}">Details</button>`}
+      ${m.pdf_path && m.status !== 'processing' ? `<button class="btn alt sm" data-a="proc" data-id="${m.id}">${m.status === 'ready' ? 'Re-process' : 'Process with AI'}</button>` : ''}${m.pdf_path ? `<button class="btn alt sm" data-a="pdf" data-id="${m.id}">Original PDF</button>` : ''}<button class="btn red sm" data-a="del" data-id="${m.id}">Delete</button></div></div>`;
+    }).join('') : '<div class="empty">Nothing here yet. Use Upload to share a PDF.</div>';
+  }
+  ['clKind', 'clLevel'].forEach(i => $(i).onchange = drawLib); $('clQ').oninput = drawLib;
+  $('clList').onclick = async e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return; const m = mats.find(x => x.id === b.dataset.id); if (!m) return;
+    try {
+      if (b.dataset.a === 'pdf') { const { data, error } = await sb.storage.from('classroom-pdfs').createSignedUrl(m.pdf_path, 300); if (error) throw error; window.open(data.signedUrl, '_blank'); }
+      else if (b.dataset.a === 'view') { const { data, error } = await sb.from('cr_materials').select('notes_md').eq('id', m.id).single(); if (error) throw error; modal(m.title, `<div class="crmd">${render(data.notes_md)}</div>`); }
+      else if (b.dataset.a === 'pub') { const { error } = await sb.from('cr_materials').update({ published: !m.published }).eq('id', m.id); if (error) throw error; toast(m.published ? 'Hidden from students' : 'Published to students'); loadLib(); }
+      else if (b.dataset.a === 'proc') { if (m.status === 'ready' && !confirm('Re-process the PDF? The notes (including your edits) and the quiz will be replaced.')) return; b.disabled = true; toast('Processing. Keep this page open until it finishes.'); loadLib(); try { const r = await pipeline(m.id, () => { }); toast(r.quizError ? 'Notes ready. Quiz not built: ' + r.quizError : 'Notes and quiz are ready'); } finally { loadLib(); } }
+      else if (b.dataset.a === 'del') { if (!confirm('Delete "' + m.title + '"? Its notes, quiz and original PDF will be removed for good.')) return; const { error } = await sb.from('cr_materials').delete().eq('id', m.id); if (error) throw error; if (m.pdf_path) await sb.storage.from('classroom-pdfs').remove([m.pdf_path]).catch(() => { }); toast('Deleted'); loadLib(); }
+      else if (b.dataset.a === 'edit') edit(m);
+    } catch (er) { toast(er.message || 'Something went wrong'); loadLib(); }
+  };
+  async function edit(m) {
+    let notes = '';
+    if (m.status === 'ready') { const { data } = await sb.from('cr_materials').select('notes_md').eq('id', m.id).single(); notes = data?.notes_md || ''; }
+    modal('Edit: ' + m.title, `<label>Title</label><input id="ceT" value="${esc(m.title)}"><div class="grid2"><div><label>Course code</label><input id="ceC" value="${esc(m.course_code)}"></div><div><label>Course title</label><input id="ceCT" value="${esc(m.course_title || '')}"></div></div>
+      <div class="grid2"><div><label>Department</label><input id="ceD" list="crDepts" value="${esc(m.department_name)}"></div><div><label>Level</label><select id="ceL">${LEVELS.map(n => `<option value="${n}" ${n === m.level ? 'selected' : ''}>${n} Level</option>`).join('')}</select></div></div>
+      <label>Session / year</label><input id="ceS" value="${esc(m.academic_session || '')}">${m.status === 'ready' ? `<label>Notes (Markdown: # heading, ## subheading, - bullet, **bold**)</label><textarea id="ceN" style="min-height:320px">${esc(notes)}</textarea>` : ''}`,
+      async () => {
+        const all = norm($('ceD').value) === 'all departments', dept = clean($('ceD').value), patch = { title: clean($('ceT').value), course_code: clean($('ceC').value).toUpperCase(), course_title: clean($('ceCT').value) || null, department_name: all ? 'All departments' : dept, department_key: all ? '*' : norm(dept), level: +$('ceL').value, academic_session: clean($('ceS').value) || null };
+        if (patch.title.length < 2 || patch.course_code.length < 2 || dept.length < 2) return toast('Title, course code and department are required.');
+        if ($('ceN')) { if ($('ceN').value.trim().length < 20) return toast('The notes cannot be empty.'); patch.notes_md = $('ceN').value; }
+        $('crMSave').disabled = true; const { error } = await sb.from('cr_materials').update(patch).eq('id', m.id); $('crMSave').disabled = false;
+        if (error) return toast(error.message); $('crModal').classList.add('hide'); toast('Saved'); loadLib();
+      });
+  }
+
+  // ---- quizzes ----
+  async function loadQuizzes() {
+    const [{ data, error }, st] = await Promise.all([sb.from('cr_quizzes').select('id,title,published,created_at,material_id,cr_materials(title,course_code,level,department_name,kind),cr_questions(count)').order('created_at', { ascending: false }).limit(200), sb.rpc('cr_staff_quiz_stats')]);
+    if (error) { $('cqList').innerHTML = `<div class="empty">${esc(error.message)}</div>`; return; }
+    const stats = {}; (st.data || []).forEach(x => stats[x.quiz_id] = x); quizzes = data || [];
+    $('cqList').innerHTML = quizzes.length ? quizzes.map(z => { const m = z.cr_materials || {}, n = z.cr_questions?.[0]?.count ?? 0, s = stats[z.id];
+      return `<div class="crit"><h4>${esc(z.title)} <span class="pill${z.published ? '' : ' c'}">${z.published ? 'Live' : 'Hidden'}</span></h4><div class="meta">${esc(m.course_code || '')} · ${m.level || ''} Level · ${esc(m.department_name || '')} · ${n} questions · ${s ? s.attempts + ' attempts, average ' + s.avg + '%' : 'no attempts yet'}</div>
+      <div class="acts"><button class="btn alt sm" data-a="q" data-id="${z.id}">Questions</button><button class="btn alt sm" data-a="pub" data-id="${z.id}">${z.published ? 'Hide' : 'Publish'}</button><button class="btn alt sm" data-a="regen" data-id="${z.id}">Regenerate</button><button class="btn red sm" data-a="del" data-id="${z.id}">Delete</button></div></div>`; }).join('')
+      : '<div class="empty">No quizzes yet. They are created automatically when a PDF is processed.</div>';
+  }
+  $('cqList').onclick = async e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return; const z = quizzes.find(x => x.id === b.dataset.id); if (!z) return;
+    try {
+      if (b.dataset.a === 'pub') { const { error } = await sb.from('cr_quizzes').update({ published: !z.published }).eq('id', z.id); if (error) throw error; loadQuizzes(); }
+      else if (b.dataset.a === 'del') { if (!confirm('Delete this quiz and all its attempts?')) return; const { error } = await sb.from('cr_quizzes').delete().eq('id', z.id); if (error) throw error; loadQuizzes(); }
+      else if (b.dataset.a === 'regen') { const c = prompt('How many questions? (5 to 20). The current quiz will be replaced.', '10'); if (c === null) return; b.disabled = true; b.textContent = 'Generating…'; try { await ai('classroom.quiz', { material_id: z.material_id, count: +c || 10 }); toast('New quiz created'); } finally { loadQuizzes(); } }
+      else if (b.dataset.a === 'q') editQuestions(z);
+    } catch (er) { toast(er.message || 'Something went wrong'); }
+  };
+  async function editQuestions(z) {
+    const { data, error } = await sb.from('cr_questions').select('*').eq('quiz_id', z.id).order('position'); if (error) return toast(error.message);
+    modal(z.title, (data || []).map((q, i) => `<details class="crq" data-id="${q.id}"><summary>${i + 1}. ${esc(q.question)}</summary><label>Question</label><textarea class="qq">${esc(q.question)}</textarea>
+      ${q.options.map((o, k) => `<div class="o"><input type="radio" name="r${q.id}" value="${k}" ${k === q.correct_index ? 'checked' : ''} aria-label="Correct answer ${'ABCD'[k]}"><input class="qo" value="${esc(o)}"></div>`).join('')}
+      <label>Explanation</label><textarea class="qe">${esc(q.explanation || '')}</textarea><div class="row"><button class="btn sm" data-s="${q.id}">Save question</button><button class="btn red sm" data-x="${q.id}">Remove</button></div></details>`).join('') || '<div class="empty">No questions.</div>');
+    $('crMB').onclick = async e => {
+      const d = e.target.closest('details'); if (!d) return;
+      try {
+        if (e.target.dataset.s) { const opts = [...d.querySelectorAll('.qo')].map(x => x.value.trim()), r = d.querySelector('input[type=radio]:checked');
+          if (opts.some(x => !x) || new Set(opts.map(x => x.toLowerCase())).size < 4) return toast('Enter four different options.'); if (!d.querySelector('.qq').value.trim()) return toast('Enter the question.');
+          const { error } = await sb.from('cr_questions').update({ question: d.querySelector('.qq').value.trim(), options: opts, correct_index: +(r?.value ?? 0), explanation: d.querySelector('.qe').value.trim() || null }).eq('id', d.dataset.id); if (error) throw error; toast('Question saved'); }
+        else if (e.target.dataset.x) { if (!confirm('Remove this question?')) return; const { error } = await sb.from('cr_questions').delete().eq('id', d.dataset.id); if (error) throw error; d.remove(); }
+      } catch (er) { toast(er.message); }
+    };
+  }
+
+  // ---- students by level ----
+  async function loadStudents() {
+    const { data, error } = await sb.rpc('cr_staff_students', { p_level: +$('csLevel').value || null, p_dept: $('csDept').value.trim() || null });
+    if (error) { toast(error.message); return; }
+    stuRows = data || []; const by = {}; stuRows.forEach(s => by[s.level] = (by[s.level] || 0) + 1);
+    $('csChips').innerHTML = `<div class="stat"><b>${stuRows.length}</b><span>Students</span></div>` + LEVELS.filter(n => by[n]).map(n => `<div class="stat"><b>${by[n]}</b><span>${n} Level</span></div>`).join('');
+    $('csRows').innerHTML = stuRows.map(s => `<tr><td>${esc(s.name)}</td><td>${esc(s.matric)}</td><td>${esc(s.department)}</td><td>${s.level}</td></tr>`).join(''); $('csNone').classList.toggle('hide', !!stuRows.length);
+  }
+  $('csGo').onclick = loadStudents;
+  $('csXls').onclick = async () => { if (!stuRows.length) return toast('Nothing to export. Show students first.'); try { await exportXlsx('students-by-level.xlsx', [['Name', 'Matric', 'Department', 'Level'], ...stuRows.map(s => [s.name, s.matric, s.department, s.level])], 'Students'); } catch (e) { toast(e.message); } };
+
+  // ---- courses ----
+  async function loadCourses2() {
+    const { data, error } = await sb.from('courses').select('id,code,title,level,departments(name)').order('code'); if (error) return toast(error.message);
+    $('ccRows').innerHTML = (data || []).map(c => `<tr><td>${esc(c.code)}</td><td>${esc(c.title)}</td><td>${esc(c.departments?.name || '')}</td><td>${esc(c.level)}</td><td>${adm() ? `<button class="btn alt sm" data-id="${c.id}" data-c="${esc(c.code)}" data-t="${esc(c.title)}">Edit</button>` : ''}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">No courses yet.</td></tr>';
+  }
+  $('ccRows').onclick = async e => {
+    const b = e.target.closest('button[data-id]'); if (!b) return; const code = prompt('Course code', b.dataset.c); if (code === null) return; const title = prompt('Course title', b.dataset.t); if (title === null) return;
+    const { error } = await sb.rpc('cr_admin_update_course', { p_id: b.dataset.id, p_code: code, p_title: title }); if (error) return toast(error.message); toast('Course updated'); loadCourses2(); if (typeof loadCourses === 'function') loadCourses();
+  };
+  $('ccAdd').onclick = () => { document.querySelector('.tab[data-t=host]').click(); if (typeof openForm === 'function') openForm(); };
+})();
+</script>
+</body></html>
